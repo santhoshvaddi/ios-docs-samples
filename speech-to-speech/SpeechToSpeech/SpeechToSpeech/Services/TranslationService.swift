@@ -25,11 +25,13 @@ enum StopwatchServiceError: Error {
 
 }
 
+let TRANSLATE_HOST = "translation.googleapis.com"
+
 typealias TranslationCompletionHandler = (TranslateTextResponse?, NSError?) -> (Void)
 
 class TranslationServices {
   static let sharedInstance = TranslationServices()
-  private var client = TranslationService(host: ApplicationConstants.TRANSLATE_Host)
+  private var client = TranslationService(host: TRANSLATE_HOST)
   private var call : GRPCProtoCall!
 
   private var token : String!
@@ -41,7 +43,7 @@ class TranslationServices {
       return "No token is available"
     }
   }
-  
+
   func fetchToken(_ completion:@escaping (StopwatchServiceError?)->()) {
 
     let credentialsURL = Bundle.main.url(forResource: "credentials", withExtension: "json")!
@@ -61,15 +63,33 @@ class TranslationServices {
     }
   }
 
-  
   func translateText(text: String, completionHandler: @escaping (TranslateTextResponse)->Void) {
-
     let translateRequest = TranslateTextRequest()
-    translateRequest.sourceLanguageCode = "en-US"
-    translateRequest.targetLanguageCode = "hi"
+    if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
+      let selectedTransFrom = userPreference[ApplicationConstants.selectedTransFrom] ?? ""
+      let selectedTransTo = userPreference[ApplicationConstants.selectedTransTo] ?? ""
+      if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let voiceList = appDelegate.voiceLists {
+        let transTo = voiceList.filter {
+          return $0.languageName == selectedTransTo
+        }
+        if let transTo = transTo.first {
+          let transToLangCode =  transTo.languageCode
+          translateRequest.targetLanguageCode = transToLangCode
+        }
+
+        let transFrom = voiceList.filter {
+          return $0.languageName == selectedTransFrom
+        }
+        if let transFrom = transFrom.first {
+          let transFromLangCode =  transFrom.languageCode
+          translateRequest.sourceLanguageCode = transFromLangCode
+        }
+      }
+    }
+
     translateRequest.contentsArray = [text]
     translateRequest.mimeType = "text/plain"
-    translateRequest.parent = "projects/dialogflowsamples-santhosh-2/locations/global"
+    translateRequest.parent = ApplicationConstants.translateParent
     call = client.rpcToTranslateText(with: translateRequest, handler: { (translateResponse, error) in
       if error != nil {
         print(error?.localizedDescription ?? "No eror description found")
@@ -79,11 +99,7 @@ class TranslationServices {
       guard let res = translateResponse else {return}
       completionHandler(res)
     })
-
-    //    call.requestHeaders.setObject(NSString(string:""), forKey:NSString(string:"X-Goog-Api-Key"))
-    call.requestHeaders.setObject(NSString(string:self.authorization()),
-
-                                  forKey:NSString(string:"Authorization"))
+    call.requestHeaders.setObject(NSString(string:self.authorization()), forKey:NSString(string:"Authorization"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this
     call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
     call.start()

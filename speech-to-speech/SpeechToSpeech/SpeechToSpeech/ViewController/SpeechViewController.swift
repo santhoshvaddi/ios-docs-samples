@@ -31,6 +31,8 @@ class SpeechViewController : UIViewController, AudioControllerDelegate {
   var listening: Bool = false
   var tableViewDataSource = [[String: String]]()
   var isFirst = true
+  var avPlayer: AVAudioPlayer?
+
   override func viewDidLoad() {
     super.viewDidLoad()
     self.view.tintColor = .black
@@ -91,8 +93,21 @@ class SpeechViewController : UIViewController, AudioControllerDelegate {
                 strongSelf.recordAudio(strongSelf.audioButton)
                 strongSelf.isFirst = true
                 let text = (result.alternativesArray?.firstObject as? SpeechRecognitionAlternative)?.transcript ?? ""
-                strongSelf.tableViewDataSource.append([ApplicationConstants.botKey: text])
-                strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+                //Received transcript, sending it to Translation API
+                //MARK:- Call Translation API
+                TranslationServices.sharedInstance.translateText(text: text, completionHandler: {response in
+                  guard let translatedObj = response.translationsArray.firstObject as? Translation, let translatedText = translatedObj.translatedText else {return}
+                  strongSelf.tableViewDataSource.append([ApplicationConstants.botKey: translatedText])
+                  strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+                  //Received translated text, sending it to Speech to text API
+                  //MARK:- Call STT API
+                  TextToSpeechRecognitionService.sharedInstance.textToSpeech(text: translatedText, completionHandler: {audioData in
+
+                    self?.audioPlayerFor(audioData: audioData)
+                    print("playing audio")
+                  })
+                })
+
               } else {
                 if let firstAlternativeResult = result.alternativesArray?.firstObject as? SpeechRecognitionAlternative, !firstAlternativeResult.transcript.isEmpty {
                   if strongSelf.isFirst {
@@ -122,6 +137,17 @@ extension SpeechViewController {
     tableViewDataSource.append([ApplicationConstants.botKey: error.localizedDescription])
     tableView.insertRows(at: [IndexPath(row: tableViewDataSource.count -  1, section: 0)], with: .automatic)
     tableView.scrollToBottom()
+  }
+
+  func audioPlayerFor(audioData: Data) {
+    DispatchQueue.main.async {
+      do {
+        self.avPlayer = try AVAudioPlayer(data: audioData)
+        self.avPlayer?.play()
+      } catch let error {
+        print("Error occurred while playing audio: \(error.localizedDescription)")
+      }
+    }
   }
 }
 

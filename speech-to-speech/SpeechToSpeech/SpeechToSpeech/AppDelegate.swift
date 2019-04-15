@@ -23,16 +23,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   var voiceLists: [FormattedVoice]?
   
-  
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    // Override point for customization after application launch.
-    
-    TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formattedVoices) in
-      self.voiceLists = formattedVoices
-    }
-    return true
+  func application
+    (_ application: UIApplication,
+     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil)
+    -> Bool {
+      TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formatedVoices) in
+        self.voiceLists = formatedVoices
+      }
+      TranslationServices.sharedInstance.fetchToken {(error) in
+        if let error = error {
+          print(error.localizedDescription)
+        } else {
+          print("token created")
+        }
+      }
+      return true
   }
-  
-  
 }
-

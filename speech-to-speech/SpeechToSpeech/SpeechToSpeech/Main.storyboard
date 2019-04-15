@@ -22,46 +22,16 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ty5-TZ-JZM">
-                                <rect key="frame" x="20" y="124" width="335" height="150"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tUX-8Z-Rsg">
-                                        <rect key="frame" x="0.0" y="0.0" width="335" height="30"/>
-                                        <state key="normal" title="TranslateFrom"/>
-                                        <connections>
-                                            <action selector="translateFromAction:" destination="kgI-gA-blk" eventType="touchUpInside" id="2dF-ZA-cy9"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OkW-EL-Icc">
-                                        <rect key="frame" x="0.0" y="40" width="335" height="30"/>
-                                        <state key="normal" title="Translate to"/>
-                                        <connections>
-                                            <action selector="translateTo:" destination="kgI-gA-blk" eventType="touchUpInside" id="McK-T5-k52"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e7y-oc-K9A">
-                                        <rect key="frame" x="0.0" y="80" width="335" height="30"/>
-                                        <state key="normal" title="Synthesis"/>
-                                        <connections>
-                                            <action selector="synthesisName:" destination="kgI-gA-blk" eventType="touchUpInside" id="OCE-Po-2BK"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5AQ-d7-o5w">
-                                        <rect key="frame" x="0.0" y="120" width="335" height="30"/>
-                                        <state key="normal" title="Voice type"/>
-                                        <connections>
-                                            <action selector="voiceType:" destination="kgI-gA-blk" eventType="touchUpInside" id="JcM-Ta-7UT"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                            </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dCf-yP-HrQ">
-                                <rect key="frame" x="20" y="580" width="335" height="40"/>
-                                <color key="backgroundColor" red="0.94083958860000005" green="0.9489637017" blue="0.95716065169999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <rect key="frame" x="20" y="570" width="335" height="50"/>
+                                <color key="backgroundColor" red="0.25882352941176467" green="0.32549019607843138" blue="0.68627450980392157" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="R5G-fL-4rw"/>
+                                    <constraint firstAttribute="height" constant="50" id="R5G-fL-4rw"/>
                                 </constraints>
-                                <state key="normal" title="Get started"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                <state key="normal" title="Get started">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
                                 <connections>
                                     <action selector="getStarted:" destination="kgI-gA-blk" eventType="touchUpInside" id="3bG-uZ-dls"/>
                                 </connections>
@@ -69,15 +39,17 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="Ty5-TZ-JZM" firstAttribute="top" secondItem="b7H-LF-cj9" secondAttribute="bottom" constant="60" id="4p5-DW-xGe"/>
                             <constraint firstAttribute="trailing" secondItem="dCf-yP-HrQ" secondAttribute="trailing" constant="20" id="9Kv-NN-ebo"/>
-                            <constraint firstAttribute="trailing" secondItem="Ty5-TZ-JZM" secondAttribute="trailing" constant="20" id="FOi-y4-x2h"/>
                             <constraint firstItem="dCf-yP-HrQ" firstAttribute="leading" secondItem="eOm-P3-Ifx" secondAttribute="leading" constant="20" id="KUB-Cp-z3g"/>
-                            <constraint firstItem="Ty5-TZ-JZM" firstAttribute="leading" secondItem="eOm-P3-Ifx" secondAttribute="leading" constant="20" id="Xja-JI-vtF"/>
                             <constraint firstItem="8u3-3h-JO1" firstAttribute="top" secondItem="dCf-yP-HrQ" secondAttribute="bottom" constant="47" id="dlL-bp-XxT"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="yYn-FM-4KA"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <connections>
+                        <outlet property="getStartedButton" destination="dCf-yP-HrQ" id="NmZ-gp-4N6"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kD2-LF-v05" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -86,7 +58,7 @@
         <!--Speech-->
         <scene sceneID="Sta-B2-UMb">
             <objects>
-                <viewController title="Speech" id="mvi-qn-EIn" customClass="SpeechViewController" customModule="SpeechToSpeech" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SpeechViewController" title="Speech" id="mvi-qn-EIn" customClass="SpeechViewController" customModule="SpeechToSpeech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jaP-9y-EFl">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -130,7 +102,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="539"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="selfCI" id="aVY-Qm-p8B" customClass="ChatTableViewCell" customModule="Speech">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="selfCI" id="aVY-Qm-p8B" customClass="ChatTableViewCell" customModule="SpeechToSpeech" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="aVY-Qm-p8B" id="KoH-0q-A0F">
@@ -164,11 +136,11 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="selfCardView" destination="PKh-8i-tVs" id="Tdg-3D-dxy"/>
+                                            <outlet property="selfCardView" destination="PKh-8i-tVs" id="H80-De-XWL"/>
                                             <outlet property="selfText" destination="eUW-4n-tZh" id="fiv-ma-oxz"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="intentCI" id="sTK-4Z-2a8" customClass="ChatTableViewCell" customModule="Speech">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="intentCI" id="sTK-4Z-2a8" customClass="ChatTableViewCell" customModule="SpeechToSpeech" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="sTK-4Z-2a8" id="Cqf-dc-krM">
@@ -240,10 +212,11 @@
         <!--Navigation Controller-->
         <scene sceneID="WJ7-aY-HDM">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="uv2-cK-WrZ" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="uv2-cK-WrZ" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <toolbarItems/>
+                    <nil key="simulatedTopBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="MOo-MM-nrF">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

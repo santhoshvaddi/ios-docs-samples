@@ -23,13 +23,25 @@ struct ApplicationConstants {
   static let languageCode = "en-US"
   static let STT_Host = "speech.googleapis.com"
   static let TRANSLATE_Host = "translation.googleapis.com"
+  static let translateParent = "projects/project-id/locations/global"
 
 }
 
 extension ApplicationConstants {
   static let ttsScreenTitle = "Speech-to-Speech Translation"
-  static let SpeechScreenTitle = "Speech"
+  static let SpeechScreenTitle = "Speech-to-Speech Translation"
+  static let SettingsScreenTtitle = "Settings"
   static let selfKey = "Self"
   static let botKey = "Bot"
+  static let selectedTransFrom = "selectedTransFrom"
+  static let selectedTransTo = "selectedTransTo"
+  static let selectedVoiceType = "selectedVoiceType"
+  static let selectedSynthName = "selectedSynthName"
+  static let useerLanguagePreferences = "useerLanguagePreferences"
+  static let translateFromPlaceholder = "Translate from"
+  static let translateToPlaceholder = "Translate to"
+  static let synthNamePlaceholder = "Synth name"
+  static let voiceTypePlaceholder = "Voice type"
+
 }
 
