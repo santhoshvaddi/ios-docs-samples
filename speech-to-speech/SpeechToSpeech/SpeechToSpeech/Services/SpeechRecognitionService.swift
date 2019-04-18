@@ -29,6 +29,15 @@ class SpeechRecognitionService {
 
   static let sharedInstance = SpeechRecognitionService()
 
+  private let tokenService = TokenService.shared
+  func authorization() -> String {
+    if tokenService.token != nil {
+      return "Bearer " + tokenService.token!
+    } else {
+      return "No token is available"
+    }
+  }
+
   func streamAudioData(_ audioData: NSData, completion: @escaping SpeechRecognitionCompletionHandler) {
     if (!streaming) {
       // if we aren't already streaming, set up a gRPC connection
@@ -39,9 +48,8 @@ class SpeechRecognitionService {
         { (done, response, error) in
             completion(response, error as NSError?)
       })
-      // authenticate using an API key obtained from the Google Cloud Console
-      call.requestHeaders.setObject(NSString(string: ApplicationConstants.API_KEY),
-                                    forKey:NSString(string:"X-Goog-Api-Key"))
+      
+      call.requestHeaders.setObject(NSString(string:self.authorization()), forKey:NSString(string:"Authorization"))
       // if the API key has a bundle ID restriction, specify the bundle ID like this
       call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!),
                                     forKey:NSString(string:"X-Ios-Bundle-Identifier"))

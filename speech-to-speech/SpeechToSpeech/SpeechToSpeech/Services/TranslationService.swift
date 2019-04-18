@@ -18,7 +18,7 @@ import Foundation
 import googleapis
 import AuthLibrary
 
-enum StopwatchServiceError: Error {
+enum ServiceError: Error {
   case unknownError
   case invalidCredentials
   case tokenNotAvailable
@@ -33,33 +33,13 @@ class TranslationServices {
   static let sharedInstance = TranslationServices()
   private var client = TranslationService(host: TRANSLATE_HOST)
   private var call : GRPCProtoCall!
-
-  private var token : String!
+  private let tokenService = TokenService.shared
 
   func authorization() -> String {
-    if self.token != nil {
-      return "Bearer " + self.token
+    if tokenService.token != nil {
+      return "Bearer " + tokenService.token!
     } else {
       return "No token is available"
-    }
-  }
-
-  func fetchToken(_ completion:@escaping (StopwatchServiceError?)->()) {
-
-    let credentialsURL = Bundle.main.url(forResource: "credentials", withExtension: "json")!
-    let scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-    let provider = ServiceAccountTokenProvider(credentialsURL:credentialsURL, scopes:scopes)
-    if let provider = provider {
-      try! provider.withToken({ (token, error) in
-        if let token = token {
-          self.token = token.AccessToken
-          completion(nil)
-        } else {
-          completion(.tokenNotAvailable)
-        }
-      })
-    } else {
-      completion(.invalidCredentials)
     }
   }
 

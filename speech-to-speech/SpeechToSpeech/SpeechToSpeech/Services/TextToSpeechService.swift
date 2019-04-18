@@ -25,6 +25,14 @@ class TextToSpeechRecognitionService {
   private var call : GRPCProtoCall!
   
   static let sharedInstance = TextToSpeechRecognitionService()
+  private let tokenService = TokenService.shared
+  func authorization() -> String {
+    if tokenService.token != nil {
+      return "Bearer " + tokenService.token!
+    } else {
+      return "No token is available"
+    }
+  }
 
   func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data) -> Void) {
     let synthesisInput = SynthesisInput()
@@ -83,10 +91,9 @@ class TextToSpeechRecognitionService {
       }
       completionHandler(audioData)
     })
-    call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
 
+    call.requestHeaders.setObject(NSString(string:self.authorization()), forKey:NSString(string:"Authorization"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this
-
     call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
     print("HEADERS:\(String(describing: call.requestHeaders))")
     call.start()
@@ -102,9 +109,9 @@ class TextToSpeechRecognitionService {
             }
            
         })
-        
-        call.requestHeaders.setObject(NSString(string: ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
-        
+
+      call.requestHeaders.setObject(NSString(string:self.authorization()), forKey:NSString(string:"Authorization"))
+
         // if the API key has a bundle ID restriction, specify the bundle ID like this
         
         call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))

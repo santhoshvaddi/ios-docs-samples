@@ -27,14 +27,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     (_ application: UIApplication,
      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil)
     -> Bool {
-      TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formatedVoices) in
-        self.voiceLists = formatedVoices
-      }
-      TranslationServices.sharedInstance.fetchToken {(error) in
+
+      TokenService.shared.fetchToken {(error) in
         if let error = error {
           print(error.localizedDescription)
         } else {
           print("token created")
+          TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formatedVoices) in
+            self.voiceLists = formatedVoices
+          }
+
         }
       }
       return true

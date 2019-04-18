@@ -27,7 +27,7 @@ class SettingsViewController: UIViewController {
   var selectedSynthName = ""
   var selectedVoiceType = ""
 
-  @IBOutlet weak var getStartedButton: UIButton!
+  @IBOutlet weak var getStartedButton: MDCButton!
   let translateFromView: MDCTextField = {
     let address = MDCTextField()
     address.translatesAutoresizingMaskIntoConstraints = false
@@ -71,7 +71,6 @@ class SettingsViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    getStartedButton.layer.cornerRadius = 5.0
     self.view.tintColor = .black
     self.view.backgroundColor = ApplicationScheme.shared.colorScheme.surfaceColor
     self.title = ApplicationConstants.SettingsScreenTtitle
@@ -104,6 +103,7 @@ class SettingsViewController: UIViewController {
     if let textInput = textInputController.textInput as? MDCTextInput {
       MDCTextFieldTypographyThemer.applyTypographyScheme(typographyScheme, to: textInput)
     }
+    MDCContainedButtonThemer.applyScheme(ApplicationScheme.shared.buttonScheme, to: getStartedButton)
   }
 
   func setupTextFields() {
