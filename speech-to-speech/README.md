@@ -1,8 +1,13 @@
 # Cloud Speech to Speech Translation iOS Sample
 
-This app demonstrate how to make API calls to the [Cloud Translation API](https://cloud.google.com/translate/docs/quickstart-client-libraries-v3), using audio recorded from an iOS device's microphone. Check out app's README for full getting started instructions.
+This app demonstrates how to make gRPC connections to the(API Integration):
+1. Make streaming gRPC connections to the [Cloud Speech API](https://cloud.google.com/speech/) to te recognize speech audio. Receiving Transcript.
+2. Send Transcript to [Translate API](https://cloud.google.com/translate/)
+3. Send Translated text to [Text-to-Speech API](https://cloud.google.com/text-to-speech/)
+4. [Get list of voices](https://cloud.google.com/text-to-speech/docs/list-voices)
 
-Please note: As this new service is rolled out, early users will be whitelisted. To learn more and to apply for access, please visit https://cloud.google.com/translate/docs/quickstart-client-libraries-v3.
+Check out app's README for full getting started instructions.
+
 
 ## Contents
 
