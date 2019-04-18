@@ -1,4 +1,4 @@
-# Cloud Text to Speech to Speech Translation  iOS Sample
+# Cloud Speech to Speech Translation iOS Sample
 
 This app demonstrate how to make API calls to the [Cloud Translation API](https://cloud.google.com/translate/docs/quickstart-client-libraries-v3), using audio recorded from an iOS device's microphone. Check out app's README for full getting started instructions.
 

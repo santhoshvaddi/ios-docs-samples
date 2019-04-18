@@ -30,24 +30,13 @@
 
 @implementation Speech
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
-
 // Designated initializer
-- (instancetype)initWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions {
-  return [super initWithHost:host
-                 packageName:@"google.cloud.speech.v1p1beta1"
-                 serviceName:@"Speech"
-                 callOptions:callOptions];
-}
-
 - (instancetype)initWithHost:(NSString *)host {
-  return [super initWithHost:host
+  self = [super initWithHost:host
                  packageName:@"google.cloud.speech.v1p1beta1"
                  serviceName:@"Speech"];
+  return self;
 }
-
-#pragma clang diagnostic pop
 
 // Override superclass initializer to disallow different package and service names.
 - (instancetype)initWithHost:(NSString *)host
@@ -56,28 +45,16 @@
   return [self initWithHost:host];
 }
 
-- (instancetype)initWithHost:(NSString *)host
-                 packageName:(NSString *)packageName
-                 serviceName:(NSString *)serviceName
-                 callOptions:(GRPCCallOptions *)callOptions {
-  return [self initWithHost:host callOptions:callOptions];
-}
-
 #pragma mark - Class Methods
 
 + (instancetype)serviceWithHost:(NSString *)host {
   return [[self alloc] initWithHost:host];
 }
 
-+ (instancetype)serviceWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions {
-  return [[self alloc] initWithHost:host callOptions:callOptions];
-}
-
 #pragma mark - Method Implementations
 
 #pragma mark Recognize(RecognizeRequest) returns (RecognizeResponse)
 
-// Deprecated methods.
 /**
  * Performs synchronous speech recognition: receive results after all audio
  * has been sent and processed.
@@ -96,21 +73,8 @@
              responseClass:[RecognizeResponse class]
         responsesWriteable:[GRXWriteable writeableWithSingleHandler:handler]];
 }
-/**
- * Performs synchronous speech recognition: receive results after all audio
- * has been sent and processed.
- */
-- (GRPCUnaryProtoCall *)recognizeWithMessage:(RecognizeRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions {
-  return [self RPCToMethod:@"Recognize"
-                   message:message
-           responseHandler:handler
-               callOptions:callOptions
-             responseClass:[RecognizeResponse class]];
-}
-
 #pragma mark LongRunningRecognize(LongRunningRecognizeRequest) returns (Operation)
 
-// Deprecated methods.
 /**
  * Performs asynchronous speech recognition: receive results via the
  * google.longrunning.Operations interface. Returns either an
@@ -133,23 +97,8 @@
              responseClass:[Operation class]
         responsesWriteable:[GRXWriteable writeableWithSingleHandler:handler]];
 }
-/**
- * Performs asynchronous speech recognition: receive results via the
- * google.longrunning.Operations interface. Returns either an
- * `Operation.error` or an `Operation.response` which contains
- * a `LongRunningRecognizeResponse` message.
- */
-- (GRPCUnaryProtoCall *)longRunningRecognizeWithMessage:(LongRunningRecognizeRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions {
-  return [self RPCToMethod:@"LongRunningRecognize"
-                   message:message
-           responseHandler:handler
-               callOptions:callOptions
-             responseClass:[Operation class]];
-}
-
 #pragma mark StreamingRecognize(stream StreamingRecognizeRequest) returns (stream StreamingRecognizeResponse)
 
-// Deprecated methods.
 /**
  * Performs bidirectional streaming speech recognition: receive results while
  * sending audio. This method is only available via the gRPC API (not REST).
@@ -168,16 +117,5 @@
              responseClass:[StreamingRecognizeResponse class]
         responsesWriteable:[GRXWriteable writeableWithEventHandler:eventHandler]];
 }
-/**
- * Performs bidirectional streaming speech recognition: receive results while
- * sending audio. This method is only available via the gRPC API (not REST).
- */
-- (GRPCStreamingProtoCall *)streamingRecognizeWithResponseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions {
-  return [self RPCToMethod:@"StreamingRecognize"
-           responseHandler:handler
-               callOptions:callOptions
-             responseClass:[StreamingRecognizeResponse class]];
-}
-
 @end
 #endif

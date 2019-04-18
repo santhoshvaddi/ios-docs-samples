@@ -15,6 +15,7 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -27,18 +28,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     (_ application: UIApplication,
      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil)
     -> Bool {
-
-      TokenService.shared.fetchToken {(error) in
-        if let error = error {
-          print(error.localizedDescription)
-        } else {
-          print("token created")
-          TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formatedVoices) in
-            self.voiceLists = formatedVoices
-          }
-
-        }
+      FirebaseApp.configure()
+      TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formatedVoices) in
+        self.voiceLists = formatedVoices
       }
       return true
+  }
+  func retrieveAccessToken(completionHandler: ((String) -> Void)? = nil) {
+    NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.retreivingToken), object: nil)
+    //this sample uses Firebase Auth signInAnonymously and you can insert any auth signin that they offer.
+    Auth.auth().signInAnonymously() { (authResult, error) in
+      if error != nil {
+        //Sign in failed
+        completionHandler?("")
+        return
+      }
+      TokenService.shared.retrieveAccessToken(completionHandler: {(token, error) in
+        if let token = token {
+          NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+          completionHandler?(token)
+        } else {
+          completionHandler?("")
+        }
+      })
+    }
   }
 }

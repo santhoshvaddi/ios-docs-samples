@@ -35,54 +35,58 @@ class TranslationServices {
   private var call : GRPCProtoCall!
   private let tokenService = TokenService.shared
 
-  func authorization() -> String {
-    if tokenService.token != nil {
-      return "Bearer " + tokenService.token!
-    } else {
-      return "No token is available"
+  func authorization(completionHandler: @escaping (String)-> Void) {
+    TokenService.getToken { (token) in
+      if !token.isEmpty {
+        completionHandler(ApplicationConstants.tokenType + token)
+      } else {
+        completionHandler(ApplicationConstants.noTokenError)
+      }
     }
   }
 
   func translateText(text: String, completionHandler: @escaping (TranslateTextResponse)->Void) {
-    let translateRequest = TranslateTextRequest()
-    if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
-      let selectedTransFrom = userPreference[ApplicationConstants.selectedTransFrom] ?? ""
-      let selectedTransTo = userPreference[ApplicationConstants.selectedTransTo] ?? ""
-      if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let voiceList = appDelegate.voiceLists {
-        let transTo = voiceList.filter {
-          return $0.languageName == selectedTransTo
-        }
-        if let transTo = transTo.first {
-          let transToLangCode =  transTo.languageCode
-          translateRequest.targetLanguageCode = transToLangCode
-        }
+    authorization(completionHandler: { (authT) in
+      let translateRequest = TranslateTextRequest()
+      if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
+        let selectedTransFrom = userPreference[ApplicationConstants.selectedTransFrom] ?? ""
+        let selectedTransTo = userPreference[ApplicationConstants.selectedTransTo] ?? ""
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let voiceList = appDelegate.voiceLists {
+          let transTo = voiceList.filter {
+            return $0.languageName == selectedTransTo
+          }
+          if let transTo = transTo.first {
+            let transToLangCode =  transTo.languageCode
+            translateRequest.targetLanguageCode = transToLangCode
+          }
 
-        let transFrom = voiceList.filter {
-          return $0.languageName == selectedTransFrom
-        }
-        if let transFrom = transFrom.first {
-          let transFromLangCode =  transFrom.languageCode
-          translateRequest.sourceLanguageCode = transFromLangCode
+          let transFrom = voiceList.filter {
+            return $0.languageName == selectedTransFrom
+          }
+          if let transFrom = transFrom.first {
+            let transFromLangCode =  transFrom.languageCode
+            translateRequest.sourceLanguageCode = transFromLangCode
+          }
         }
       }
-    }
-
-    translateRequest.contentsArray = [text]
-    translateRequest.mimeType = "text/plain"
-    translateRequest.parent = ApplicationConstants.translateParent
-    call = client.rpcToTranslateText(with: translateRequest, handler: { (translateResponse, error) in
-      if error != nil {
-        print(error?.localizedDescription ?? "No eror description found")
-        return
-      }
-      print(translateResponse ?? "Responsd found nil")
-      guard let res = translateResponse else {return}
-      completionHandler(res)
+      
+      translateRequest.contentsArray = [text]
+      translateRequest.mimeType = "text/plain"
+      translateRequest.parent = ApplicationConstants.translateParent
+      self.call = self.client.rpcToTranslateText(with: translateRequest, handler: { (translateResponse, error) in
+        if error != nil {
+          print(error?.localizedDescription ?? "No eror description found")
+          return
+        }
+        print(translateResponse ?? "Responsd found nil")
+        guard let res = translateResponse else {return}
+        completionHandler(res)
+      })
+      self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+      // if the API key has a bundle ID restriction, specify the bundle ID like this
+      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+      self.call.start()
     })
-    call.requestHeaders.setObject(NSString(string:self.authorization()), forKey:NSString(string:"Authorization"))
-    // if the API key has a bundle ID restriction, specify the bundle ID like this
-    call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-    call.start()
   }
 }
 

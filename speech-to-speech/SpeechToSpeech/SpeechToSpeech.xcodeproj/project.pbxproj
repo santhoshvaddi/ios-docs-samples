@@ -20,7 +20,6 @@
 		67363D5C2261A0A7002FFC1C /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67363D582261A0A7002FFC1C /* TranslationService.swift */; };
 		67363D602261A184002FFC1C /* SpeechViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67363D5E2261A184002FFC1C /* SpeechViewController.swift */; };
 		67363D632261A1FA002FFC1C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 67363D622261A1FA002FFC1C /* Main.storyboard */; };
-		67363D652261A549002FFC1C /* credentials.json in Resources */ = {isa = PBXBuildFile; fileRef = 67363D642261A549002FFC1C /* credentials.json */; };
 		67363D672261A912002FFC1C /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67363D662261A912002FFC1C /* AudioController.swift */; };
 		67363D692261AB7E002FFC1C /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67363D682261AB7D002FFC1C /* ChatTableViewCell.swift */; };
 		67363D6B2261ADC3002FFC1C /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67363D6A2261ADC3002FFC1C /* SettingsViewController.swift */; };
@@ -46,7 +45,6 @@
 		67363D5D2261A0C8002FFC1C /* Stopwatch-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Stopwatch-Bridging-Header.h"; sourceTree = "<group>"; };
 		67363D5E2261A184002FFC1C /* SpeechViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechViewController.swift; sourceTree = "<group>"; };
 		67363D622261A1FA002FFC1C /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		67363D642261A549002FFC1C /* credentials.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = credentials.json; sourceTree = "<group>"; };
 		67363D662261A912002FFC1C /* AudioController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		67363D682261AB7D002FFC1C /* ChatTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
 		67363D6A2261ADC3002FFC1C /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -98,7 +96,6 @@
 			isa = PBXGroup;
 			children = (
 				67363D6C2261B223002FFC1C /* ViewController */,
-				67363D642261A549002FFC1C /* credentials.json */,
 				67363D4C22619FB9002FFC1C /* Fonts */,
 				67363D4722619F3A002FFC1C /* Services */,
 				67363D3522619F10002FFC1C /* AppDelegate.swift */,
@@ -217,7 +214,6 @@
 				67363D3D22619F12002FFC1C /* Assets.xcassets in Resources */,
 				67363D5222619FB9002FFC1C /* Rubik-OFL.txt in Resources */,
 				67363D632261A1FA002FFC1C /* Main.storyboard in Resources */,
-				67363D652261A549002FFC1C /* credentials.json in Resources */,
 				67363D5122619FB9002FFC1C /* Rubik-Regular.ttf in Resources */,
 				67363D5022619FB9002FFC1C /* Rubik-Medium.ttf in Resources */,
 			);

@@ -22,68 +22,72 @@ typealias SpeechRecognitionCompletionHandler = (StreamingRecognizeResponse?, NSE
 class SpeechRecognitionService {
   var sampleRate: Int = 16000
   private var streaming = false
-
+  
   private var client : Speech!
   private var writer : GRXBufferedPipe!
   private var call : GRPCProtoCall!
-
+  
   static let sharedInstance = SpeechRecognitionService()
-
+  
   private let tokenService = TokenService.shared
-  func authorization() -> String {
-    if tokenService.token != nil {
-      return "Bearer " + tokenService.token!
-    } else {
-      return "No token is available"
+  func authorization(completionHandler: @escaping (String)-> Void) {
+    TokenService.getToken { (token) in
+      if !token.isEmpty {
+        completionHandler(ApplicationConstants.tokenType + token)
+      } else {
+        completionHandler(ApplicationConstants.noTokenError)
+      }
     }
   }
-
+  
   func streamAudioData(_ audioData: NSData, completion: @escaping SpeechRecognitionCompletionHandler) {
-    if (!streaming) {
-      // if we aren't already streaming, set up a gRPC connection
-      client = Speech(host: ApplicationConstants.STT_Host)
-      writer = GRXBufferedPipe()
-      call = client.rpcToStreamingRecognize(withRequestsWriter: writer,
-                                            eventHandler:
-        { (done, response, error) in
+    authorization(completionHandler: { (authT) in
+      if (!self.streaming) {
+        // if we aren't already streaming, set up a gRPC connection
+        self.client = Speech(host: ApplicationConstants.STT_Host)
+        self.writer = GRXBufferedPipe()
+        self.call = self.client.rpcToStreamingRecognize(withRequestsWriter: self.writer,
+                                                        eventHandler:
+          { (done, response, error) in
             completion(response, error as NSError?)
-      })
+        })
+        
+        self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+        // if the API key has a bundle ID restriction, specify the bundle ID like this
+        self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!),
+                                           forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+        
+        print("HEADERS:\(String(describing: self.call.requestHeaders))")
+        
+        self.call.start()
+        self.streaming = true
+        
+        // send an initial request message to configure the service
+        let recognitionConfig = RecognitionConfig()
+        recognitionConfig.encoding =  .linear16
+        recognitionConfig.sampleRateHertz = Int32(self.sampleRate)
+        recognitionConfig.languageCode = "en-US"
+        recognitionConfig.maxAlternatives = 30
+        recognitionConfig.enableWordTimeOffsets = true
+        
+        let streamingRecognitionConfig = StreamingRecognitionConfig()
+        streamingRecognitionConfig.config = recognitionConfig
+        streamingRecognitionConfig.singleUtterance = false
+        streamingRecognitionConfig.interimResults = true
+        
+        let streamingRecognizeRequest = StreamingRecognizeRequest()
+        streamingRecognizeRequest.streamingConfig = streamingRecognitionConfig
+        
+        self.writer.writeValue(streamingRecognizeRequest)
+      }
       
-      call.requestHeaders.setObject(NSString(string:self.authorization()), forKey:NSString(string:"Authorization"))
-      // if the API key has a bundle ID restriction, specify the bundle ID like this
-      call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!),
-                                    forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-
-        print("HEADERS:\(String(describing: call.requestHeaders))")
-
-      call.start()
-      streaming = true
-
-      // send an initial request message to configure the service
-      let recognitionConfig = RecognitionConfig()
-      recognitionConfig.encoding =  .linear16
-      recognitionConfig.sampleRateHertz = Int32(sampleRate)
-      recognitionConfig.languageCode = "en-US"
-      recognitionConfig.maxAlternatives = 30
-      recognitionConfig.enableWordTimeOffsets = true
-
-      let streamingRecognitionConfig = StreamingRecognitionConfig()
-      streamingRecognitionConfig.config = recognitionConfig
-      streamingRecognitionConfig.singleUtterance = false
-      streamingRecognitionConfig.interimResults = true
-
+      // send a request message containing the audio data
       let streamingRecognizeRequest = StreamingRecognizeRequest()
-      streamingRecognizeRequest.streamingConfig = streamingRecognitionConfig
-
-      writer.writeValue(streamingRecognizeRequest)
-    }
-
-    // send a request message containing the audio data
-    let streamingRecognizeRequest = StreamingRecognizeRequest()
-    streamingRecognizeRequest.audioContent = audioData as Data
-    writer.writeValue(streamingRecognizeRequest)
+      streamingRecognizeRequest.audioContent = audioData as Data
+      self.writer.writeValue(streamingRecognizeRequest)
+    })
   }
-
+  
   func stopStreaming() {
     if (!streaming) {
       return
@@ -91,10 +95,10 @@ class SpeechRecognitionService {
     writer.finishWithError(nil)
     streaming = false
   }
-
+  
   func isStreaming() -> Bool {
     return streaming
   }
-
+  
 }
 

@@ -26,99 +26,106 @@ class TextToSpeechRecognitionService {
   
   static let sharedInstance = TextToSpeechRecognitionService()
   private let tokenService = TokenService.shared
-  func authorization() -> String {
-    if tokenService.token != nil {
-      return "Bearer " + tokenService.token!
-    } else {
-      return "No token is available"
+
+  func authorization(completionHandler: @escaping (String)-> Void) {
+    TokenService.getToken { (token) in
+      if !token.isEmpty {
+        completionHandler(ApplicationConstants.tokenType + token)
+      } else {
+        completionHandler(ApplicationConstants.noTokenError)
+      }
     }
   }
 
   func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data) -> Void) {
-    let synthesisInput = SynthesisInput()
-    synthesisInput.text = text
+    authorization(completionHandler: { (authT) in
+      let synthesisInput = SynthesisInput()
+      synthesisInput.text = text
 
-    let voiceSelectionParams = VoiceSelectionParams()
-    voiceSelectionParams.languageCode = "en-US"
-    voiceSelectionParams.ssmlGender = SsmlVoiceGender.neutral
+      let voiceSelectionParams = VoiceSelectionParams()
+      voiceSelectionParams.languageCode = "en-US"
+      voiceSelectionParams.ssmlGender = SsmlVoiceGender.neutral
 
-    if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
-      let selectedTransTo = userPreference[ApplicationConstants.selectedTransTo] ?? ""
-      let selectedSynthName = userPreference[ApplicationConstants.selectedSynthName] ?? ""
-      let selectedVoiceType = userPreference[ApplicationConstants.selectedVoiceType] ?? ""
+      if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
+        let selectedTransTo = userPreference[ApplicationConstants.selectedTransTo] ?? ""
+        let selectedSynthName = userPreference[ApplicationConstants.selectedSynthName] ?? ""
+        let selectedVoiceType = userPreference[ApplicationConstants.selectedVoiceType] ?? ""
 
-      if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let voiceList = appDelegate.voiceLists {
-        let transTo = voiceList.filter {
-          return $0.languageName == selectedTransTo
-        }
-        if let transTo = transTo.first {
-          let transToLangCode =  transTo.languageCode
-          voiceSelectionParams.languageCode = transToLangCode
-
-          if let synthNameIndex = transTo.synthesisName.index(of: selectedSynthName){
-            let synthNameCode = transTo.synthesisNameCode[synthNameIndex]
-            voiceSelectionParams.name = synthNameCode
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let voiceList = appDelegate.voiceLists {
+          let transTo = voiceList.filter {
+            return $0.languageName == selectedTransTo
           }
-          if let synthGenderIndex = transTo.synthesisGender.index(of: selectedVoiceType){
-            let synthGenderCode = transTo.synthesisGenderCode[synthGenderIndex]
-            voiceSelectionParams.ssmlGender = synthGenderCode
+          if let transTo = transTo.first {
+            let transToLangCode =  transTo.languageCode
+            voiceSelectionParams.languageCode = transToLangCode
+
+            if let synthNameIndex = transTo.synthesisName.index(of: selectedSynthName){
+              let synthNameCode = transTo.synthesisNameCode[synthNameIndex]
+              voiceSelectionParams.name = synthNameCode
+            }
+            if let synthGenderIndex = transTo.synthesisGender.index(of: selectedVoiceType){
+              let synthGenderCode = transTo.synthesisGenderCode[synthGenderIndex]
+              voiceSelectionParams.ssmlGender = synthGenderCode
+            }
           }
         }
       }
-    }
 
-    let audioConfig = AudioConfig()
-    audioConfig.audioEncoding = AudioEncoding.mp3
+      let audioConfig = AudioConfig()
+      audioConfig.audioEncoding = AudioEncoding.mp3
 
-    let speechRequest = SynthesizeSpeechRequest()
-    speechRequest.audioConfig = audioConfig
-    speechRequest.input = synthesisInput
-    speechRequest.voice = voiceSelectionParams
+      let speechRequest = SynthesizeSpeechRequest()
+      speechRequest.audioConfig = audioConfig
+      speechRequest.input = synthesisInput
+      speechRequest.voice = voiceSelectionParams
 
-    call = client.rpcToSynthesizeSpeech(with: speechRequest, handler: { (synthesizeSpeechResponse, error) in
-      if error != nil {
-        print(error?.localizedDescription ?? "No error description available")
-        return
-      }
-      guard let response = synthesizeSpeechResponse else {
-        print("No response received")
-        return
-      }
-      print("Text to speech response\(response)")
-      guard let audioData =  response.audioContent else {
-        print("no audio data received")
-        return
-      }
-      completionHandler(audioData)
+      self.call = self.client.rpcToSynthesizeSpeech(with: speechRequest, handler: { (synthesizeSpeechResponse, error) in
+        if error != nil {
+          print(error?.localizedDescription ?? "No error description available")
+          return
+        }
+        guard let response = synthesizeSpeechResponse else {
+          print("No response received")
+          return
+        }
+        print("Text to speech response\(response)")
+        guard let audioData =  response.audioContent else {
+          print("no audio data received")
+          return
+        }
+        completionHandler(audioData)
+      })
+
+      self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+      // if the API key has a bundle ID restriction, specify the bundle ID like this
+      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+      print("HEADERS:\(String(describing: self.call.requestHeaders))")
+      self.call.start()
     })
-
-    call.requestHeaders.setObject(NSString(string:self.authorization()), forKey:NSString(string:"Authorization"))
-    // if the API key has a bundle ID restriction, specify the bundle ID like this
-    call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-    print("HEADERS:\(String(describing: call.requestHeaders))")
-    call.start()
   }
     
-    func getVoiceLists(completionHandler: @escaping ([FormattedVoice]) -> Void) {
-        call = client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
-            print(listVoiceResponse ?? "No voice list found")
-            if let listVoiceResponse = listVoiceResponse {
-                let formattedVoice = FormattedVoice.formatVoiceResponse(listVoiceResponse: listVoiceResponse)
-                print("Formatted output: \(formattedVoice)")
-                completionHandler(formattedVoice)
-            }
-           
-        })
+  func getVoiceLists(completionHandler: @escaping ([FormattedVoice]) -> Void) {
+    authorization(completionHandler: { (authT) in
+      self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
+        print(listVoiceResponse ?? "No voice list found")
+        if let listVoiceResponse = listVoiceResponse {
+          let formattedVoice = FormattedVoice.formatVoiceResponse(listVoiceResponse: listVoiceResponse)
+          print("Formatted output: \(formattedVoice)")
+          completionHandler(formattedVoice)
+        }
 
-      call.requestHeaders.setObject(NSString(string:self.authorization()), forKey:NSString(string:"Authorization"))
+      })
 
-        // if the API key has a bundle ID restriction, specify the bundle ID like this
-        
-        call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-        print("HEADERS:\(String(describing: call.requestHeaders))")
-        call.start()
-    
-    }
+      self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+
+      // if the API key has a bundle ID restriction, specify the bundle ID like this
+
+      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+      print("HEADERS:\(String(describing: self.call.requestHeaders))")
+      self.call.start()
+
+    })
+  }
     
     
 }

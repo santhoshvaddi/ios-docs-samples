@@ -16,14 +16,13 @@
 
 import Foundation
 
-//MARK: Stopwatch service
 struct ApplicationConstants {
-  static let API_KEY = "YOUR_API_KEY"
   static let TTS_Host = "texttospeech.googleapis.com"
+  // TODO: Replace with your GCP PROJECT_ID
+  static let translateParent = "projects/PROJECT_ID/locations/global"
   static let languageCode = "en-US"
   static let STT_Host = "speech.googleapis.com"
   static let TRANSLATE_Host = "translation.googleapis.com"
-  static let translateParent = "projects/project-id/locations/global"
 
 }
 
@@ -43,5 +42,17 @@ extension ApplicationConstants {
   static let synthNamePlaceholder = "Synth name"
   static let voiceTypePlaceholder = "Voice type"
 
+}
+
+//MARK: Token generator constants
+extension ApplicationConstants {
+  static let token = "Token"
+  static let accessToken = "accessToken"
+  static let expireTime = "expireTime"
+  static let tokenReceived = "tokenReceived"
+  static let retreivingToken = "RetrievingToken"
+  static let getTokenAPI = "getOAuthToken"
+  static let tokenType = "Bearer "
+  static let noTokenError = "No token is available"
 }
 

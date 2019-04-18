@@ -35,84 +35,9 @@
 #endif
 
 @class GRPCProtoCall;
-@class GRPCUnaryProtoCall;
-@class GRPCStreamingProtoCall;
-@class GRPCCallOptions;
-@protocol GRPCProtoResponseHandler;
 
 
 NS_ASSUME_NONNULL_BEGIN
-
-@protocol TranslationService2 <NSObject>
-
-#pragma mark TranslateText(TranslateTextRequest) returns (TranslateTextResponse)
-
-/**
- * Translates input text and returns translated text.
- */
-- (GRPCUnaryProtoCall *)translateTextWithMessage:(TranslateTextRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark DetectLanguage(DetectLanguageRequest) returns (DetectLanguageResponse)
-
-/**
- * Detects the language of text within a request.
- */
-- (GRPCUnaryProtoCall *)detectLanguageWithMessage:(DetectLanguageRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark GetSupportedLanguages(GetSupportedLanguagesRequest) returns (SupportedLanguages)
-
-/**
- * Returns a list of supported languages for translation.
- */
-- (GRPCUnaryProtoCall *)getSupportedLanguagesWithMessage:(GetSupportedLanguagesRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark BatchTranslateText(BatchTranslateTextRequest) returns (Operation)
-
-/**
- * Translates a large volume of text in asynchronous batch mode.
- * This function provides real-time output as the inputs are being processed.
- * If caller cancels a request, the partial results (for an input file, it's
- * all or nothing) may still be available on the specified output location.
- * 
- * This call returns immediately and you can
- * use google.longrunning.Operation.name to poll the status of the call.
- */
-- (GRPCUnaryProtoCall *)batchTranslateTextWithMessage:(BatchTranslateTextRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark CreateGlossary(CreateGlossaryRequest) returns (Operation)
-
-/**
- * Creates a glossary and returns the long-running operation. Returns
- * NOT_FOUND, if the project doesn't exist.
- */
-- (GRPCUnaryProtoCall *)createGlossaryWithMessage:(CreateGlossaryRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark ListGlossaries(ListGlossariesRequest) returns (ListGlossariesResponse)
-
-/**
- * Lists glossaries in a project. Returns NOT_FOUND, if the project doesn't
- * exist.
- */
-- (GRPCUnaryProtoCall *)listGlossariesWithMessage:(ListGlossariesRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark GetGlossary(GetGlossaryRequest) returns (Glossary)
-
-/**
- * Gets a glossary. Returns NOT_FOUND, if the glossary doesn't
- * exist.
- */
-- (GRPCUnaryProtoCall *)getGlossaryWithMessage:(GetGlossaryRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark DeleteGlossary(DeleteGlossaryRequest) returns (Operation)
-
-/**
- * Deletes a glossary, or cancels glossary construction
- * if the glossary isn't created yet.
- * Returns NOT_FOUND, if the glossary doesn't exist.
- */
-- (GRPCUnaryProtoCall *)deleteGlossaryWithMessage:(DeleteGlossaryRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-@end
 
 @protocol TranslationService <NSObject>
 
@@ -250,10 +175,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Basic service implementation, over gRPC, that only does
  * marshalling and parsing.
  */
-@interface TranslationService : GRPCProtoService<TranslationService, TranslationService2>
-- (instancetype)initWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithHost:(NSString *)host;
-+ (instancetype)serviceWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions;
+@interface TranslationService : GRPCProtoService<TranslationService>
+- (instancetype)initWithHost:(NSString *)host NS_DESIGNATED_INITIALIZER;
 + (instancetype)serviceWithHost:(NSString *)host;
 @end
 #endif

@@ -43,43 +43,9 @@
 #endif
 
 @class GRPCProtoCall;
-@class GRPCUnaryProtoCall;
-@class GRPCStreamingProtoCall;
-@class GRPCCallOptions;
-@protocol GRPCProtoResponseHandler;
 
 
 NS_ASSUME_NONNULL_BEGIN
-
-@protocol Speech2 <NSObject>
-
-#pragma mark Recognize(RecognizeRequest) returns (RecognizeResponse)
-
-/**
- * Performs synchronous speech recognition: receive results after all audio
- * has been sent and processed.
- */
-- (GRPCUnaryProtoCall *)recognizeWithMessage:(RecognizeRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark LongRunningRecognize(LongRunningRecognizeRequest) returns (Operation)
-
-/**
- * Performs asynchronous speech recognition: receive results via the
- * google.longrunning.Operations interface. Returns either an
- * `Operation.error` or an `Operation.response` which contains
- * a `LongRunningRecognizeResponse` message.
- */
-- (GRPCUnaryProtoCall *)longRunningRecognizeWithMessage:(LongRunningRecognizeRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-#pragma mark StreamingRecognize(stream StreamingRecognizeRequest) returns (stream StreamingRecognizeResponse)
-
-/**
- * Performs bidirectional streaming speech recognition: receive results while
- * sending audio. This method is only available via the gRPC API (not REST).
- */
-- (GRPCStreamingProtoCall *)streamingRecognizeWithResponseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
-
-@end
 
 @protocol Speech <NSObject>
 
@@ -140,10 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Basic service implementation, over gRPC, that only does
  * marshalling and parsing.
  */
-@interface Speech : GRPCProtoService<Speech, Speech2>
-- (instancetype)initWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithHost:(NSString *)host;
-+ (instancetype)serviceWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions;
+@interface Speech : GRPCProtoService<Speech>
+- (instancetype)initWithHost:(NSString *)host NS_DESIGNATED_INITIALIZER;
 + (instancetype)serviceWithHost:(NSString *)host;
 @end
 #endif
