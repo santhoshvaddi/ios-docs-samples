@@ -7,7 +7,7 @@ This app demonstrates how to make gRPC connections to the(API Integration):
 4. [Get list of voices](https://cloud.google.com/text-to-speech/docs/list-voices)
 
 
-To call the APIs from iOS, you need to provide authorization tokens with each request for them to be accepted by the above APIs. To get this token, this sample uses a Firebase Function (in Node.js) to generate these tokens on the behalf of a service account to be used by the app when making a request to the above APIs.
+To call the APIs from iOS, you need to provide authorization tokens with each request for authentication. To get this token, this sample uses a Firebase Function (in Node.js) to generate these tokens on the behalf of a service account.
 
 ## Prerequisites
 - An OSX machine or emulator
@@ -46,7 +46,8 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
 - "1. Set up Node.js and the Firebase CLI"
 - "2. Initialize Firebase SDK for Cloud Functions".
 - Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/functions/dialogflow/functions/index.js).
-- Replace scope in line 81 with `scope: ['https://www.googleapis.com/auth/cloud-platform'],`
+- Replace scope in line 79 with `scope: ['https://www.googleapis.com/auth/cloud-platform'],`
+- Replace `DialogflowTokens` with `SpeechTokens` in Line number 30 and 152.
 - Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`translate-client`) and project id. 
 - Deploy getOAuthToken method by running command:
 ```

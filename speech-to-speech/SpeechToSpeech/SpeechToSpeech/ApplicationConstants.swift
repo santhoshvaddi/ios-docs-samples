@@ -44,7 +44,7 @@ extension ApplicationConstants {
 
 }
 
-//MARK: Token generator constants
+//MARK: Token service constants
 extension ApplicationConstants {
   static let token = "Token"
   static let accessToken = "accessToken"

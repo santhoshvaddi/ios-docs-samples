@@ -34,23 +34,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
       return true
   }
-  func retrieveAccessToken(completionHandler: ((String) -> Void)? = nil) {
-    NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.retreivingToken), object: nil)
-    //this sample uses Firebase Auth signInAnonymously and you can insert any auth signin that they offer.
-    Auth.auth().signInAnonymously() { (authResult, error) in
-      if error != nil {
-        //Sign in failed
-        completionHandler?("")
-        return
-      }
-      TokenService.shared.retrieveAccessToken(completionHandler: {(token, error) in
-        if let token = token {
-          NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
-          completionHandler?(token)
-        } else {
-          completionHandler?("")
-        }
-      })
-    }
-  }
 }

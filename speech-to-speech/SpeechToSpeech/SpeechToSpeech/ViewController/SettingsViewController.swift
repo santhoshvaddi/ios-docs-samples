@@ -217,6 +217,12 @@ extension SettingsViewController: UITextFieldDelegate {
   func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
     let index = textField.tag
     if let optionType = OptionsType(rawValue: index) {
+      if optionType == .synthName || optionType == .voiceType {
+        if self.selectedTransTo.isEmpty {
+          self.showNoTranslateToError()
+          return false
+        }
+      }
       let  actionSheet = thirtyOptions(optionsType: optionType, completionHandler: {action in
         switch optionType {
         case .translateFrom:
@@ -238,6 +244,12 @@ extension SettingsViewController: UITextFieldDelegate {
     }
     return false
   }
+  func showNoTranslateToError() {
+    let alertVC = UIAlertController(title: "Information needed", message: "Please select translate to first", preferredStyle: .alert)
+    alertVC.addAction(UIAlertAction(title: "OK", style: .default))
+    present(alertVC, animated: true)
+  }
+
 }
 
 enum OptionsType: Int {

@@ -67,7 +67,7 @@ class ApplicationScheme: NSObject {
     scheme.headline5 = UIFont(name: fontName, size: 24)!
     scheme.headline6 = UIFont(name: fontName, size: 20)!
     scheme.subtitle1 = UIFont(name: fontName, size: 16)!
-    scheme.button = UIFont(name: fontName, size: 14)!
+    scheme.button = UIFont(name: "Rubik-Medium", size: 16)!
     return scheme
   }()
 }

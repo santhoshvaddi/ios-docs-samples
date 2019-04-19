@@ -30,18 +30,9 @@ class SpeechRecognitionService {
   static let sharedInstance = SpeechRecognitionService()
   
   private let tokenService = TokenService.shared
-  func authorization(completionHandler: @escaping (String)-> Void) {
-    TokenService.getToken { (token) in
-      if !token.isEmpty {
-        completionHandler(ApplicationConstants.tokenType + token)
-      } else {
-        completionHandler(ApplicationConstants.noTokenError)
-      }
-    }
-  }
   
   func streamAudioData(_ audioData: NSData, completion: @escaping SpeechRecognitionCompletionHandler) {
-    authorization(completionHandler: { (authT) in
+    tokenService.authorization(completionHandler: { (authT) in
       if (!self.streaming) {
         // if we aren't already streaming, set up a gRPC connection
         self.client = Speech(host: ApplicationConstants.STT_Host)

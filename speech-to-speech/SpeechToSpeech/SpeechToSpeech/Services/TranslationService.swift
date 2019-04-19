@@ -35,18 +35,8 @@ class TranslationServices {
   private var call : GRPCProtoCall!
   private let tokenService = TokenService.shared
 
-  func authorization(completionHandler: @escaping (String)-> Void) {
-    TokenService.getToken { (token) in
-      if !token.isEmpty {
-        completionHandler(ApplicationConstants.tokenType + token)
-      } else {
-        completionHandler(ApplicationConstants.noTokenError)
-      }
-    }
-  }
-
   func translateText(text: String, completionHandler: @escaping (TranslateTextResponse)->Void) {
-    authorization(completionHandler: { (authT) in
+    tokenService.authorization(completionHandler: { (authT) in
       let translateRequest = TranslateTextRequest()
       if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
         let selectedTransFrom = userPreference[ApplicationConstants.selectedTransFrom] ?? ""

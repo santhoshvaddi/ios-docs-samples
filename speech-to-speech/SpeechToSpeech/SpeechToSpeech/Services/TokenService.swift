@@ -22,27 +22,15 @@ import Firebase
 class TokenService {
 
   static let shared = TokenService()
-  var token : String?
-
-  func fetchToken(_ completion:@escaping (ServiceError?)->()) {
-
-    let credentialsURL = Bundle.main.url(forResource: "credentials", withExtension: "json")!
-    let scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-    let provider = ServiceAccountTokenProvider(credentialsURL:credentialsURL, scopes:scopes)
-    if let provider = provider {
-      try! provider.withToken({ (token, error) in
-        if let token = token {
-          self.token = token.AccessToken
-          completion(nil)
-        } else {
-          completion(.tokenNotAvailable)
-        }
-      })
-    } else {
-      completion(.invalidCredentials)
+  func authorization(completionHandler: @escaping (String)-> Void) {
+    TokenService.getToken { (token) in
+      if !token.isEmpty {
+        completionHandler(ApplicationConstants.tokenType + token)
+      } else {
+        completionHandler(ApplicationConstants.noTokenError)
+      }
     }
   }
-
   //This func retrieves tokens from index.js
   public func retrieveAccessToken(completionHandler: @escaping (String?, Error?) -> Void) {
     Functions.functions().httpsCallable(ApplicationConstants.getTokenAPI).call { (result, error) in
@@ -82,11 +70,22 @@ class TokenService {
   //Return the newly generated token.
   static func getToken(completionHandler: @escaping (String)->Void) {
     if isExpired() {
-      guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-        return completionHandler("")
-      }
-      appDelegate.retrieveAccessToken { (result) in
-        completionHandler(result)
+      NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.retreivingToken), object: nil)
+      //this sample uses Firebase Auth signInAnonymously and you can insert any auth signin that they offer.
+      Auth.auth().signInAnonymously() { (authResult, error) in
+        if error != nil {
+          //Sign in failed
+          completionHandler("")
+          return
+        }
+        TokenService.shared.retrieveAccessToken(completionHandler: {(token, error) in
+          if let token = token {
+            NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+            completionHandler(token)
+          } else {
+            completionHandler("")
+          }
+        })
       }
     } else {
       guard let token = UserDefaults.standard.value(forKey: ApplicationConstants.token) as? [String: String],

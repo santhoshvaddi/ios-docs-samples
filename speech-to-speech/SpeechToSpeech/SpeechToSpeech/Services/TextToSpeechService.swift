@@ -27,18 +27,8 @@ class TextToSpeechRecognitionService {
   static let sharedInstance = TextToSpeechRecognitionService()
   private let tokenService = TokenService.shared
 
-  func authorization(completionHandler: @escaping (String)-> Void) {
-    TokenService.getToken { (token) in
-      if !token.isEmpty {
-        completionHandler(ApplicationConstants.tokenType + token)
-      } else {
-        completionHandler(ApplicationConstants.noTokenError)
-      }
-    }
-  }
-
   func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data) -> Void) {
-    authorization(completionHandler: { (authT) in
+    tokenService.authorization(completionHandler: { (authT) in
       let synthesisInput = SynthesisInput()
       synthesisInput.text = text
 
@@ -105,7 +95,7 @@ class TextToSpeechRecognitionService {
   }
     
   func getVoiceLists(completionHandler: @escaping ([FormattedVoice]) -> Void) {
-    authorization(completionHandler: { (authT) in
+    tokenService.authorization(completionHandler: { (authT) in
       self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
         print(listVoiceResponse ?? "No voice list found")
         if let listVoiceResponse = listVoiceResponse {
