@@ -35,7 +35,7 @@ class TranslationServices {
   private var call : GRPCProtoCall!
   private let tokenService = TokenService.shared
 
-  func translateText(text: String, completionHandler: @escaping (TranslateTextResponse)->Void) {
+  func translateText(text: String, completionHandler: @escaping (TranslateTextResponse?, String?)->Void) {
     tokenService.authorization(completionHandler: { (authT) in
       let translateRequest = TranslateTextRequest()
       if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
@@ -66,11 +66,12 @@ class TranslationServices {
       self.call = self.client.rpcToTranslateText(with: translateRequest, handler: { (translateResponse, error) in
         if error != nil {
           print(error?.localizedDescription ?? "No eror description found")
+          completionHandler(nil, error?.localizedDescription)
           return
         }
         print(translateResponse ?? "Responsd found nil")
         guard let res = translateResponse else {return}
-        completionHandler(res)
+        completionHandler(res, nil)
       })
       self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
       // if the API key has a bundle ID restriction, specify the bundle ID like this

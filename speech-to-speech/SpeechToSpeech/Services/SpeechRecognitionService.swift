@@ -60,6 +60,21 @@ class SpeechRecognitionService {
         recognitionConfig.languageCode = "en-US"
         recognitionConfig.maxAlternatives = 30
         recognitionConfig.enableWordTimeOffsets = true
+
+        if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
+          let selectedTransFrom = userPreference[ApplicationConstants.selectedTransFrom] ?? ""
+          if let appdelegate = UIApplication.shared.delegate as? AppDelegate,
+            let voiceList = appdelegate.voiceLists {
+            let transFrom = voiceList.filter {
+              return $0.languageName == selectedTransFrom
+            }
+            if let transFrom = transFrom.first {
+              let transFromLangCode =  transFrom.languageCode
+              recognitionConfig.languageCode = transFromLangCode
+            }
+          }
+        }
+
         
         let streamingRecognitionConfig = StreamingRecognitionConfig()
         streamingRecognitionConfig.config = recognitionConfig

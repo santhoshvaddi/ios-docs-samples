@@ -27,7 +27,7 @@ class TextToSpeechRecognitionService {
   static let sharedInstance = TextToSpeechRecognitionService()
   private let tokenService = TokenService.shared
 
-  func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data) -> Void) {
+  func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data?, _ error: String?) -> Void) {
     tokenService.authorization(completionHandler: { (authT) in
       let synthesisInput = SynthesisInput()
       synthesisInput.text = text
@@ -72,6 +72,7 @@ class TextToSpeechRecognitionService {
       self.call = self.client.rpcToSynthesizeSpeech(with: speechRequest, handler: { (synthesizeSpeechResponse, error) in
         if error != nil {
           print(error?.localizedDescription ?? "No error description available")
+           completionHandler(nil, error?.localizedDescription )
           return
         }
         guard let response = synthesizeSpeechResponse else {
@@ -83,7 +84,7 @@ class TextToSpeechRecognitionService {
           print("no audio data received")
           return
         }
-        completionHandler(audioData)
+        completionHandler(audioData, nil)
       })
 
       self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
@@ -94,14 +95,18 @@ class TextToSpeechRecognitionService {
     })
   }
     
-  func getVoiceLists(completionHandler: @escaping ([FormattedVoice]) -> Void) {
+  func getVoiceLists(completionHandler: @escaping ([FormattedVoice]?, String?) -> Void) {
     tokenService.authorization(completionHandler: { (authT) in
       self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
+        if let errorStr = error?.localizedDescription {
+          completionHandler(nil, errorStr)
+          return
+        }
         print(listVoiceResponse ?? "No voice list found")
         if let listVoiceResponse = listVoiceResponse {
           let formattedVoice = FormattedVoice.formatVoiceResponse(listVoiceResponse: listVoiceResponse)
           print("Formatted output: \(formattedVoice)")
-          completionHandler(formattedVoice)
+          completionHandler(formattedVoice, nil)
         }
 
       })

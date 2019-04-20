@@ -29,7 +29,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil)
     -> Bool {
       FirebaseApp.configure()
-      TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formatedVoices) in
+      TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formatedVoices, errorString) in
+        if let errorString = errorString {
+          let alertVC = UIAlertController(title: "Error", message: errorString, preferredStyle: .alert)
+          alertVC.addAction(UIAlertAction(title: "OK", style: .default))
+          self.window?.rootViewController?.present(alertVC, animated: true)
+        }
         self.voiceLists = formatedVoices
       }
       return true

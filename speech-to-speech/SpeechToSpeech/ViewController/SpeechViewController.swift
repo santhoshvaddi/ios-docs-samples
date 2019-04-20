@@ -69,74 +69,151 @@ class SpeechViewController : UIViewController, AudioControllerDelegate {
   }
 
   func processSampleData(_ data: Data) -> Void {
+
     audioData.append(data)
 
+
+
     // We recommend sending samples in 100ms chunks
+
     let chunkSize : Int /* bytes/chunk */ = Int(0.1 /* seconds/chunk */
+
       * Double(SAMPLE_RATE) /* samples/second */
+
       * 2 /* bytes/sample */);
 
+
+
     if (audioData.length > chunkSize) {
+
       SpeechRecognitionService.sharedInstance.streamAudioData(audioData,
+
                                                               completion:
+
         { [weak self] (response, error) in
+
           guard let strongSelf = self else {
+
             return
+
           }
 
-          if let error = error {
-            strongSelf.handleError(error: error)
-          } else if let response = response, let resultArray = response.resultsArray as? [StreamingRecognitionResult] {
-            print(response)
-            for result in resultArray {
-              if result.isFinal {
-                strongSelf.recordAudio(strongSelf.audioButton)
-                strongSelf.isFirst = true
-                let text = (result.alternativesArray?.firstObject as? SpeechRecognitionAlternative)?.transcript ?? ""
-                //Received transcript, sending it to Translation API
-                //MARK:- Call Translation API
-                TranslationServices.sharedInstance.translateText(text: text, completionHandler: {response in
-                  guard let translatedObj = response.translationsArray.firstObject as? Translation, let translatedText = translatedObj.translatedText else {return}
-                  strongSelf.tableViewDataSource.append([ApplicationConstants.botKey: translatedText])
-                  strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
-                  //Received translated text, sending it to Speech to text API
-                  //MARK:- Call STT API
-                  TextToSpeechRecognitionService.sharedInstance.textToSpeech(text: translatedText, completionHandler: {audioData in
 
-                    self?.audioPlayerFor(audioData: audioData)
-                    print("playing audio")
-                  })
+
+          if let error = error {
+
+            strongSelf.handleError(error: error)
+
+          } else if let response = response, let resultArray = response.resultsArray as? [StreamingRecognitionResult] {
+
+            print(response)
+
+            for result in resultArray {
+
+              if result.isFinal {
+
+                strongSelf.recordAudio(strongSelf.audioButton)
+
+                strongSelf.isFirst = true
+
+                let text = (result.alternativesArray?.firstObject as? SpeechRecognitionAlternative)?.transcript ?? ""
+
+                //Received transcript, sending it to Translation API
+
+                //MARK:- Call Translation API
+
+                TranslationServices.sharedInstance.translateText(text: text, completionHandler: {(response, errorString) in
+
+                  if let error = errorString {
+
+                    strongSelf.showErrorAlert(message: error)
+
+                  } else if let response = response {
+
+                    guard let translatedObj = response.translationsArray.firstObject as? Translation, let translatedText = translatedObj.translatedText else {return}
+
+                    strongSelf.tableViewDataSource.append([ApplicationConstants.botKey: translatedText])
+
+                    strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+
+                    //Received translated text, sending it to Speech to text API
+
+                    //MARK:- Call STT API
+
+                    TextToSpeechRecognitionService.sharedInstance.textToSpeech(text: translatedText, completionHandler: {(audioData, errorString) in
+
+                      if let error = errorString {
+
+                        strongSelf.showErrorAlert(message: error)
+
+                      } else if let audioData = audioData {
+
+                        self?.audioPlayerFor(audioData: audioData)
+
+                        print("playing audio")
+
+                      }
+
+                    })
+
+                  }
+
                 })
 
               } else {
+
                 if let firstAlternativeResult = result.alternativesArray?.firstObject as? SpeechRecognitionAlternative, !firstAlternativeResult.transcript.isEmpty {
+
                   if strongSelf.isFirst {
+
                     strongSelf.tableViewDataSource.append([ApplicationConstants.selfKey: firstAlternativeResult.transcript])
+
                     strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+
                     strongSelf.isFirst = false
+
                   } else {
+
                     strongSelf.tableViewDataSource.removeLast()
+
                     strongSelf.tableViewDataSource.append([ApplicationConstants.selfKey: firstAlternativeResult.transcript])
+
                     strongSelf.tableView.reloadRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+
                   }
+
                 }
+
               }
+
             }
 
+
+
             strongSelf.tableView.scrollToBottom()
+
           }
+
       })
+
       self.audioData = NSMutableData()
+
     }
+
   }
 }
 
 //MARK: helper functions
 extension SpeechViewController {
+
+  func showErrorAlert(message: String){
+    let alertVC = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+    alertVC.addAction(UIAlertAction(title: "OK", style: .default))
+    present(alertVC, animated: true)
+  }
+  
   func handleError(error: Error) {
-    tableViewDataSource.append([ApplicationConstants.botKey: error.localizedDescription])
-    tableView.insertRows(at: [IndexPath(row: tableViewDataSource.count -  1, section: 0)], with: .automatic)
-    tableView.scrollToBottom()
+    showErrorAlert(message: error.localizedDescription)
   }
 
   func audioPlayerFor(audioData: Data) {
