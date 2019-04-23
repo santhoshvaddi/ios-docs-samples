@@ -39,7 +39,7 @@ extension ApplicationConstants {
   static let useerLanguagePreferences = "useerLanguagePreferences"
   static let translateFromPlaceholder = "Translate from"
   static let translateToPlaceholder = "Translate to"
-  static let synthNamePlaceholder = "Synth name"
+  static let synthNamePlaceholder = "TTS Tech"
   static let voiceTypePlaceholder = "Voice type"
 
 }

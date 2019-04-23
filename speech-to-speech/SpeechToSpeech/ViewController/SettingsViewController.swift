@@ -100,7 +100,7 @@ class SettingsViewController: UIViewController {
   func style(textInputController:MDCTextInputControllerFilled) {
     MDCFilledTextFieldColorThemer.applySemanticColorScheme(colorScheme, to: textInputController)
     MDCTextFieldTypographyThemer.applyTypographyScheme(typographyScheme, to: textInputController)
-    if let textInput = textInputController.textInput as? MDCTextInput {
+    if let textInput = textInputController.textInput {
       MDCTextFieldTypographyThemer.applyTypographyScheme(typographyScheme, to: textInput)
     }
     MDCContainedButtonThemer.applyScheme(ApplicationScheme.shared.buttonScheme, to: getStartedButton)
@@ -135,6 +135,10 @@ class SettingsViewController: UIViewController {
       style(textInputController: controller);
       textField.tag = tag
       tag += 1
+    }
+
+    if selectedVoiceType == "Default" {
+      voiceTypeView.textColor = .gray
     }
 
     let views = [ "translateFromView": translateFromView,
@@ -229,14 +233,17 @@ extension SettingsViewController: UITextFieldDelegate {
           self.selectedTransFrom = action.title
         case .translateTo:
           self.selectedTransTo = action.title
-          self.selectedSynthName = ""
-          self.selectedVoiceType = ""
-          self.synthNameView.text = ""
-          self.voiceTypeView.text = ""
+          let synthNames = optionType.getOptions(selectedTransTo: self.selectedTransTo)
+          self.selectedSynthName = synthNames.contains("Wavenet") ? "Wavenet" : "Standard"
+          self.selectedVoiceType = "Default"
+          self.synthNameView.text = self.selectedSynthName
+          self.voiceTypeView.text = self.selectedVoiceType
+          self.voiceTypeView.textColor = .gray
         case .synthName:
           self.selectedSynthName = action.title
         case .voiceType:
           self.selectedVoiceType = action.title
+          self.voiceTypeView.textColor = self.synthNameView.textColor
         }
         textField.text = action.title
       })

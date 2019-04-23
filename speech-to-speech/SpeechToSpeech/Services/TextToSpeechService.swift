@@ -34,7 +34,7 @@ class TextToSpeechRecognitionService {
 
       let voiceSelectionParams = VoiceSelectionParams()
       voiceSelectionParams.languageCode = "en-US"
-      voiceSelectionParams.ssmlGender = SsmlVoiceGender.neutral
+      //voiceSelectionParams.ssmlGender = SsmlVoiceGender.neutral
 
       if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
         let selectedTransTo = userPreference[ApplicationConstants.selectedTransTo] ?? ""
@@ -162,6 +162,8 @@ struct FormattedVoice {
         }
       }
     }
+    result = result.sorted(by: {$0.languageName.uppercased() < $1.languageName.uppercased()})
+
     return result
   }
 
@@ -173,15 +175,15 @@ struct FormattedVoice {
     case "de-DE":
       languageName = "German"
     case "en-AU":
-      languageName = "English (Australia)"
+      languageName = "English AU"
     case "en-GB":
-      languageName = "English (United Kingdom)"
+      languageName = "English UK"
     case "en-US":
-      languageName = "English (United States)"
+      languageName = "English US"
     case "es-ES":
       languageName = "Spanish"
     case "fr-CA":
-      languageName = "French (Canada)"
+      languageName = "French CA"
     case "fr-FR":
       languageName = "French"
     case "it-IT":
@@ -197,7 +199,7 @@ struct FormattedVoice {
     case "pl-PL":
       languageName = "Polish"
     case "pt-BR":
-      languageName = "Portugese (Brazil)"
+      languageName = "Portugese BR"
 
     case "pt-PT":
       languageName = "Portugese"
@@ -206,7 +208,7 @@ struct FormattedVoice {
       languageName = "Russian"
 
     case "sk-SK":
-      languageName = "Slovak (Slovakia)"
+      languageName = "Slovak SK"
 
     case "sv-SE":
       languageName = "Swedish"
@@ -215,12 +217,12 @@ struct FormattedVoice {
       languageName = "Turkish"
 
     case "uk-UA":
-      languageName = "Ukrainian (Ukraine)"
+      languageName = "Ukrainian UA"
 
     default:
       languageName = languageCode
     }
-    return languageName
+    return "\(languageName) (\(languageCode))"
   }
 
   static func getSynthesisName(name: String) -> String {

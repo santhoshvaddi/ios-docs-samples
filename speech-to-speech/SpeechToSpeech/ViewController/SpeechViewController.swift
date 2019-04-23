@@ -69,137 +69,70 @@ class SpeechViewController : UIViewController, AudioControllerDelegate {
   }
 
   func processSampleData(_ data: Data) -> Void {
-
     audioData.append(data)
-
-
-
     // We recommend sending samples in 100ms chunks
-
-    let chunkSize : Int /* bytes/chunk */ = Int(0.1 /* seconds/chunk */
-
-      * Double(SAMPLE_RATE) /* samples/second */
-
-      * 2 /* bytes/sample */);
-
-
-
+    let chunkSize : Int /* bytes/chunk */ =
+      Int(0.1 /* seconds/chunk */
+        * Double(SAMPLE_RATE) /* samples/second */
+        * 2 /* bytes/sample */);
     if (audioData.length > chunkSize) {
-
-      SpeechRecognitionService.sharedInstance.streamAudioData(audioData,
-
-                                                              completion:
-
+      SpeechRecognitionService.sharedInstance.streamAudioData(audioData,completion:
         { [weak self] (response, error) in
-
           guard let strongSelf = self else {
-
             return
-
           }
-
-
-
           if let error = error {
-
             strongSelf.handleError(error: error)
-
           } else if let response = response, let resultArray = response.resultsArray as? [StreamingRecognitionResult] {
-
             print(response)
-
             for result in resultArray {
-
               if result.isFinal {
-
                 strongSelf.recordAudio(strongSelf.audioButton)
-
                 strongSelf.isFirst = true
-
                 let text = (result.alternativesArray?.firstObject as? SpeechRecognitionAlternative)?.transcript ?? ""
-
+                strongSelf.tableViewDataSource.removeLast()
+                strongSelf.tableViewDataSource.append([ApplicationConstants.selfKey: text])
+                strongSelf.tableView.reloadRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
                 //Received transcript, sending it to Translation API
-
                 //MARK:- Call Translation API
-
                 TranslationServices.sharedInstance.translateText(text: text, completionHandler: {(response, errorString) in
-
                   if let error = errorString {
-
                     strongSelf.showErrorAlert(message: error)
-
                   } else if let response = response {
-
                     guard let translatedObj = response.translationsArray.firstObject as? Translation, let translatedText = translatedObj.translatedText else {return}
-
                     strongSelf.tableViewDataSource.append([ApplicationConstants.botKey: translatedText])
-
                     strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
-
                     //Received translated text, sending it to Speech to text API
-
                     //MARK:- Call STT API
-
                     TextToSpeechRecognitionService.sharedInstance.textToSpeech(text: translatedText, completionHandler: {(audioData, errorString) in
-
                       if let error = errorString {
-
                         strongSelf.showErrorAlert(message: error)
-
                       } else if let audioData = audioData {
-
                         self?.audioPlayerFor(audioData: audioData)
-
                         print("playing audio")
-
                       }
-
                     })
-
                   }
-
                 })
-
               } else {
-
                 if let firstAlternativeResult = result.alternativesArray?.firstObject as? SpeechRecognitionAlternative, !firstAlternativeResult.transcript.isEmpty {
-
                   if strongSelf.isFirst {
-
                     strongSelf.tableViewDataSource.append([ApplicationConstants.selfKey: firstAlternativeResult.transcript])
-
                     strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
-
                     strongSelf.isFirst = false
-
                   } else {
-
                     strongSelf.tableViewDataSource.removeLast()
-
                     strongSelf.tableViewDataSource.append([ApplicationConstants.selfKey: firstAlternativeResult.transcript])
-
                     strongSelf.tableView.reloadRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
-
                   }
-
                 }
-
               }
-
             }
-
-
-
             strongSelf.tableView.scrollToBottom()
-
           }
-
       })
-
       self.audioData = NSMutableData()
-
     }
-
   }
 }
 
