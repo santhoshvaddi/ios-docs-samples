@@ -1,10 +1,9 @@
 # Cloud Speech to Speech Translation gRPC Swift Sample
 
-This app demonstrates how to make gRPC connections to the(API Integration):
-1. Make streaming gRPC connections to the [Cloud Speech API](https://cloud.google.com/speech/) to the recognize speech audio. Receiving Transcript.
-2. Send Transcript to [Translate API](https://cloud.google.com/translate/)
-3. Send Translated text to [Text-to-Speech API](https://cloud.google.com/text-to-speech/)
-4. [Get list of voices](https://cloud.google.com/text-to-speech/docs/list-voices)
+This app demonstrates how to create a live translation service using the Cloud Speech-To-Text, Translation, and Text-To-Speech APIs. It uses these apis to:
+* Make streaming gRPC connections to the [Cloud Speech API](https://cloud.google.com/speech/)` to recognize speech in recorded audio.
+* Send transcripts to the [Translate API](https://cloud.google.com/translate/) to get the translation.
+* Send translated text to the [Text-to-Speech API](https://cloud.google.com/text-to-speech/) so that it can be played back to the user.
 
 
 To call the APIs from iOS, you need to provide authorization tokens with each request for authentication. To get this token, this sample uses a Firebase Function (in Node.js) to generate these tokens on the behalf of a service account.
@@ -29,7 +28,7 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 - `cd ios-docs-samples/speech-to-speech/` 
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `SpeechtoSpeech.xcworkspace` and not `SpeechtoSpeech.xcodeproj`.
 - In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `SpeechtoSpeech` directory.
-- Find the line where the `project-id` is set. Replace the string value with the identifier of your Google Cloud project.
+- Find the line where the `translateParent` is set. Replace the `project_id` string with the identifier for your Google Cloud Project..
 
 ###  Setup Firebase on the application:
 
@@ -43,8 +42,8 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 The Firebase Function provides auth tokens to your app, You'll be using a provided sample function to be run with this app.
 
 - Follow the steps in this [guide](https://firebase.google.com/docs/functions/get-started) for: 
-- "1. Set up Node.js and the Firebase CLI"
-- "2. Initialize Firebase SDK for Cloud Functions".
+- 1. Set up Node.js and the Firebase CLI
+- 2. Initialize Firebase SDK for Cloud Functions.
 - Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/functions/dialogflow/functions/index.js).
 - Replace scope in line 79 with `scope: ['https://www.googleapis.com/auth/cloud-platform'],`
 - Replace `DialogflowTokens` with `SpeechTokens` in Line number 30 and 152.
@@ -62,15 +61,15 @@ firebase deploy -—only functions
 ## Run the app
 
 - You are now ready to build and run the project. In Xcode you can do this by clicking the 'Play' button in the top left. This will launch the app on the simulator or on the device you've selected. Be sure that the 'SpeechtoSpeech' target is selected in the popup near the top left of the Xcode window.
-- First screen show the multiple options such as: Translation languages, voice type etc.
-- After choosing the available options, and taping on GetStarted button user will be navigated to next screen.
-- Tapping on the `mic` button will enable the audio streaming.
+- The first screen sets up the translation service by configuring the language to translate from and to, along with the voice type.
+- After choosing the available options, and taping on the GetStarted button, you will be navigated to the next screen.
+- Tapping on the mic button will began streaming audio data for the translation.
 - This uses a custom AudioController class to capture audio in an in-memory instance of NSMutableData. When this data reaches a certain size, it is sent to the SpeechRecognitionService class, which streams it to the speech recognition service. Packets are streamed as instances of the RecognizeRequest object, and the first RecognizeRequest object sent also includes configuration information in an instance of InitialRecognizeRequest. As it runs, the AudioController logs the number of samples and average sample magnitude for each packet that it captures.
-- User spoken transcript will be at the right side.
+- Your spoken transcript will appear on the right side.
 - Translated output will be at the left side.
 - Translated output audio will be played in the background.
-- user can change the options at any time by going back to the first screen. (There is back button on the top left corner of second screen)
-- The chosen option will be passed to the input/request parameters of api calls.
+- You can change the options at any time by going back to the first screen. (There is back button on the top left corner of second screen)
+- The chosen options will be passed to the input/request parameters of api calls.
 - The chosen options will be stored in the user defaults for subsequent visits, and the fields will be repopulated.
 - Say a few words and wait for the display to update when your speech is recognized.
 
