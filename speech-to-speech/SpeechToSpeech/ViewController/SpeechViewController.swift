@@ -152,8 +152,13 @@ extension SpeechViewController {
   func audioPlayerFor(audioData: Data) {
     DispatchQueue.main.async {
       do {
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
         self.avPlayer = try AVAudioPlayer(data: audioData)
-        self.avPlayer?.play()
+        if let _ = self.avPlayer {
+          self.avPlayer?.prepareToPlay()
+          self.avPlayer?.play()
+        }
+
       } catch let error {
         print("Error occurred while playing audio: \(error.localizedDescription)")
       }

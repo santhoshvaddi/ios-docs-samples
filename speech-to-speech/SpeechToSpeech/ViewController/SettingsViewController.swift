@@ -233,7 +233,7 @@ extension SettingsViewController: UITextFieldDelegate {
           self.selectedTransFrom = action.title
         case .translateTo:
           self.selectedTransTo = action.title
-          let synthNames = optionType.getOptions(selectedTransTo: self.selectedTransTo)
+          let synthNames = OptionsType.synthName.getOptions(selectedTransTo: self.selectedTransTo)//optionType.synthName.getOptions(selectedTransTo: self.selectedTransTo)
           self.selectedSynthName = synthNames.contains("Wavenet") ? "Wavenet" : "Standard"
           self.selectedVoiceType = "Default"
           self.synthNameView.text = self.selectedSynthName
