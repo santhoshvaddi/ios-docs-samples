@@ -23,7 +23,6 @@ struct ApplicationConstants {
   static let languageCode = "en-US"
   static let STT_Host = "speech.googleapis.com"
   static let TRANSLATE_Host = "translation.googleapis.com"
-
 }
 
 extension ApplicationConstants {
@@ -54,5 +53,6 @@ extension ApplicationConstants {
   static let getTokenAPI = "getOAuthToken"
   static let tokenType = "Bearer "
   static let noTokenError = "No token is available"
+  
 }
 
