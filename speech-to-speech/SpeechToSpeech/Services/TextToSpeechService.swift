@@ -17,6 +17,7 @@
 import Foundation
 import googleapis
 import AVFoundation
+import AuthLibrary
 
 
 class TextToSpeechRecognitionService {
@@ -25,10 +26,9 @@ class TextToSpeechRecognitionService {
   private var call : GRPCProtoCall!
   
   static let sharedInstance = TextToSpeechRecognitionService()
-  private let tokenService = TokenService.shared
 
   func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data?, _ error: String?) -> Void) {
-    tokenService.authorization(completionHandler: { (authT) in
+    FirebaseTokenService.authorization { (authT) in
       let synthesisInput = SynthesisInput()
       synthesisInput.text = text
 
@@ -92,11 +92,11 @@ class TextToSpeechRecognitionService {
       self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
       print("HEADERS:\(String(describing: self.call.requestHeaders))")
       self.call.start()
-    })
+    }
   }
     
   func getVoiceLists(completionHandler: @escaping ([FormattedVoice]?, String?) -> Void) {
-    tokenService.authorization(completionHandler: { (authT) in
+    FirebaseTokenService.authorization { (authT) in
       self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
         if let errorStr = error?.localizedDescription {
           completionHandler(nil, errorStr)
@@ -119,7 +119,7 @@ class TextToSpeechRecognitionService {
       print("HEADERS:\(String(describing: self.call.requestHeaders))")
       self.call.start()
 
-    })
+    }
   }
     
     

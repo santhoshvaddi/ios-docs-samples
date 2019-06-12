@@ -15,6 +15,7 @@
 //
 import Foundation
 import googleapis
+import AuthLibrary
 
 
 typealias SpeechRecognitionCompletionHandler = (StreamingRecognizeResponse?, NSError?) -> (Void)
@@ -29,10 +30,8 @@ class SpeechRecognitionService {
   
   static let sharedInstance = SpeechRecognitionService()
   
-  private let tokenService = TokenService.shared
-  
   func streamAudioData(_ audioData: NSData, completion: @escaping SpeechRecognitionCompletionHandler) {
-    tokenService.authorization(completionHandler: { (authT) in
+    FirebaseTokenService.authorization { (authT) in
       if (!self.streaming) {
         // if we aren't already streaming, set up a gRPC connection
         self.client = Speech(host: ApplicationConstants.STT_Host)
@@ -91,7 +90,7 @@ class SpeechRecognitionService {
       let streamingRecognizeRequest = StreamingRecognizeRequest()
       streamingRecognizeRequest.audioContent = audioData as Data
       self.writer.writeValue(streamingRecognizeRequest)
-    })
+    }
   }
   
   func stopStreaming() {
