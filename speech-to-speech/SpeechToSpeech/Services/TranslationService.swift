@@ -33,7 +33,6 @@ class TranslationServices {
   static let sharedInstance = TranslationServices()
   private var client = TranslationService(host: TRANSLATE_HOST)
   private var call : GRPCProtoCall!
-
   func translateText(text: String, completionHandler: @escaping (TranslateTextResponse?, String?)->Void) {
     FirebaseTokenService.authorization { (authT) in
       let translateRequest = TranslateTextRequest()

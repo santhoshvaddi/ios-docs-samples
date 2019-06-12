@@ -20,6 +20,7 @@ import AVFoundation
 import AuthLibrary
 
 
+
 class TextToSpeechRecognitionService {
   var client = TextToSpeech(host: ApplicationConstants.TTS_Host)
   private var writer = GRXBufferedPipe()
@@ -72,7 +73,7 @@ class TextToSpeechRecognitionService {
       self.call = self.client.rpcToSynthesizeSpeech(with: speechRequest, handler: { (synthesizeSpeechResponse, error) in
         if error != nil {
           print(error?.localizedDescription ?? "No error description available")
-           completionHandler(nil, error?.localizedDescription )
+          completionHandler(nil, error?.localizedDescription )
           return
         }
         guard let response = synthesizeSpeechResponse else {
@@ -94,7 +95,7 @@ class TextToSpeechRecognitionService {
       self.call.start()
     }
   }
-    
+
   func getVoiceLists(completionHandler: @escaping ([FormattedVoice]?, String?) -> Void) {
     FirebaseTokenService.authorization { (authT) in
       self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
@@ -118,11 +119,8 @@ class TextToSpeechRecognitionService {
       self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
       print("HEADERS:\(String(describing: self.call.requestHeaders))")
       self.call.start()
-
     }
   }
-    
-    
 }
 
 struct FormattedVoice {

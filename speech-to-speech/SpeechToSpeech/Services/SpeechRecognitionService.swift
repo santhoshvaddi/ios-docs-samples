@@ -29,7 +29,7 @@ class SpeechRecognitionService {
   private var call : GRPCProtoCall!
   
   static let sharedInstance = SpeechRecognitionService()
-  
+
   func streamAudioData(_ audioData: NSData, completion: @escaping SpeechRecognitionCompletionHandler) {
     FirebaseTokenService.authorization { (authT) in
       if (!self.streaming) {
