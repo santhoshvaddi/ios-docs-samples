@@ -34,7 +34,7 @@ class TranslationServices {
   private var client = TranslationService(host: TRANSLATE_HOST)
   private var call : GRPCProtoCall!
   func translateText(text: String, completionHandler: @escaping (TranslateTextResponse?, String?)->Void) {
-    FirebaseTokenService.authorization { (authT) in
+   try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       let translateRequest = TranslateTextRequest()
       if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
         let selectedTransFrom = userPreference[ApplicationConstants.selectedTransFrom] ?? ""
@@ -71,9 +71,9 @@ class TranslationServices {
         guard let res = translateResponse else {return}
         completionHandler(res, nil)
       })
-      self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
       // if the API key has a bundle ID restriction, specify the bundle ID like this
-      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundlehave extended our project into the 1st week of October(3 more months).-Identifier"))
       self.call.start()
     }
   }

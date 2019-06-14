@@ -29,7 +29,7 @@ class TextToSpeechRecognitionService {
   static let sharedInstance = TextToSpeechRecognitionService()
 
   func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data?, _ error: String?) -> Void) {
-    FirebaseTokenService.authorization { (authT) in
+    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       let synthesisInput = SynthesisInput()
       synthesisInput.text = text
 
@@ -88,7 +88,7 @@ class TextToSpeechRecognitionService {
         completionHandler(audioData, nil)
       })
 
-      self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
       // if the API key has a bundle ID restriction, specify the bundle ID like this
       self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
       print("HEADERS:\(String(describing: self.call.requestHeaders))")
@@ -97,7 +97,7 @@ class TextToSpeechRecognitionService {
   }
 
   func getVoiceLists(completionHandler: @escaping ([FormattedVoice]?, String?) -> Void) {
-    FirebaseTokenService.authorization { (authT) in
+    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
         if let errorStr = error?.localizedDescription {
           completionHandler(nil, errorStr)
@@ -112,7 +112,7 @@ class TextToSpeechRecognitionService {
 
       })
 
-      self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
 
       // if the API key has a bundle ID restriction, specify the bundle ID like this
 
