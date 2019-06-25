@@ -29,19 +29,27 @@ enum StopwatchServiceError: Error {
   case tokenNotAvailable
 }
 
+protocol StopwatchServiceProtocol {
+  func didReceiveTextResponse(response: DFDetectIntentResponse?, error: NSError?)
+  func didReceiveAudioInputResponse(response: DFStreamingDetectIntentResponse?, error: NSError?)
+}
+
 class StopwatchService {
   var sampleRate: Int = ApplicationConstants.SampleRate
   private var streaming = false
-
   private var client : DFSessions!
   private var writer : GRXBufferedPipe!
   private var call : GRPCProtoCall!
+  var userInputText: String? = "Hello"
+  var delegate: StopwatchServiceProtocol?
+  var audioData: Data?
+  
   private var session : String {
     return "projects/" + ApplicationConstants.ProjectName + "/agent/sessions/" + ApplicationConstants.SessionID
   }
-
+  
   static let sharedInstance = StopwatchService()
-
+  
   func getDeviceID(callBack: @escaping (String)->Void) {
     InstanceID.instanceID().instanceID { (result, error) in
       if let error = error {
@@ -55,51 +63,59 @@ class StopwatchService {
       }
     }
   }
-
-
-  func streamAudioData(_ audioData: NSData, completion: @escaping StopwatchCompletionHandler) {
-    // authenticate using an authorization token (obtained using OAuth)
-    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
-      if (!self.streaming) {
-        // if we aren't already streaming, set up a gRPC connection
-        self.client = DFSessions(host:ApplicationConstants.Host)
-        self.writer = GRXBufferedPipe()
-        self.call = self.client.rpcToStreamingDetectIntent(
-          withRequestsWriter: self.writer,
-          eventHandler: { (done, response, error) in
-            completion(response, error as NSError?)
-        })
-        self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""),
-                                           forKey:NSString(string:"Authorization"))
-        self.call.start()
-        self.streaming = true
-
-        // send an initial request message to configure the service
-
-        let queryInput = DFQueryInput()
-        let inputAudioConfig = DFInputAudioConfig()
-        inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
-        inputAudioConfig.languageCode = ApplicationConstants.languageCode
-        inputAudioConfig.sampleRateHertz = Int32(self.sampleRate)
-        queryInput.audioConfig = inputAudioConfig
-
-        let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-        streamingDetectIntentRequest.session = self.session
-        streamingDetectIntentRequest.singleUtterance = true
-        streamingDetectIntentRequest.queryParams = self.getQueryParmasFor()
-        streamingDetectIntentRequest.queryInput = queryInput
-        streamingDetectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
-        self.writer.writeValue(streamingDetectIntentRequest)
+  
+  @objc func streamAudioData() {
+    getDeviceID { (deviceID) in
+      // authenticate using an authorization token (obtained using OAuth)
+      FCMTokenProvider.getToken(deviceID: deviceID) { (shouldWait, token, error) in
+        if let authT = token, shouldWait == false {//Token received execute code
+          if (!self.streaming) {
+            // if we aren't already streaming, set up a gRPC connection
+            self.client = DFSessions(host:ApplicationConstants.Host)
+            self.writer = GRXBufferedPipe()
+            self.call = self.client.rpcToStreamingDetectIntent(
+              withRequestsWriter: self.writer,
+              eventHandler: { (done, response, error) in
+                self.delegate?.didReceiveAudioInputResponse(response: response, error: error as NSError?)
+                //                            completion(response, error as NSError?)
+            })
+            self.call.requestHeaders.setObject(NSString(string:authT),
+                                               
+                                               forKeyedSubscript:NSString(string:"Authorization"))
+            self.call.start()
+            self.streaming = true
+            // send an initial request message to configure the service
+            let queryInput = DFQueryInput()
+            let inputAudioConfig = DFInputAudioConfig()
+            inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
+            inputAudioConfig.languageCode = ApplicationConstants.languageCode
+            inputAudioConfig.sampleRateHertz = Int32(self.sampleRate)
+            queryInput.audioConfig = inputAudioConfig
+            let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
+            streamingDetectIntentRequest.session = self.session
+            streamingDetectIntentRequest.singleUtterance = true
+            streamingDetectIntentRequest.queryParams = self.getQueryParmasFor()
+            streamingDetectIntentRequest.queryInput = queryInput
+            streamingDetectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
+            self.writer.writeValue(streamingDetectIntentRequest)
+            //Remove notification
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+          }
+          // send a request message containing the audio data
+          let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
+          streamingDetectIntentRequest.inputAudio = self.audioData ?? Data()
+          self.writer.writeValue(streamingDetectIntentRequest)
+        } else if shouldWait == true {//Token will be sent via PN.
+          //Observe for notification
+          NotificationCenter.default.addObserver(self, selector: #selector(self.streamAudioData), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+        } else {// an error occurred
+          //Handle error
+        }
       }
-
-      // send a request message containing the audio data
-      let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-      streamingDetectIntentRequest.inputAudio = audioData as Data
-      self.writer.writeValue(streamingDetectIntentRequest)
     }
   }
-
-  @objc func sendText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
+  
+  @objc func sendText() {
     getDeviceID { (deviceID) in
       // authenticate using an authorization token (obtained using OAuth)
       FCMTokenProvider.getToken(deviceID: deviceID) { (shouldWait, token, error) in
@@ -107,7 +123,7 @@ class StopwatchService {
           self.client = DFSessions(host:ApplicationConstants.Host)
           let queryInput = DFQueryInput()
           let inputTextConfig = DFTextInput()
-          inputTextConfig.text = userInput
+          inputTextConfig.text = self.userInputText ?? ""
           inputTextConfig.languageCode = ApplicationConstants.languageCode
           queryInput.text = inputTextConfig
           let detectIntentRequest = DFDetectIntentRequest()
@@ -116,7 +132,7 @@ class StopwatchService {
           detectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
           detectIntentRequest.queryParams = self.getQueryParmasFor()
           self.call = self.client.rpcToDetectIntent(with: detectIntentRequest, handler: { (response, error) in
-            completion(response, error as NSError?)
+            self.delegate?.didReceiveTextResponse(response: response, error: error as NSError?)
           })
           self.call.requestHeaders.setObject(NSString(string:authT),
                                              forKeyedSubscript:NSString(string:"Authorization"))
@@ -125,17 +141,22 @@ class StopwatchService {
           NotificationCenter.default.removeObserver(self, name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
         } else if shouldWait == true { //Token will be sent via PN
           //Observe for notification
-          NotificationCenter.default.addObserver(self, selector: #selector(self.sendText(_:completion:)), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: completion)
+          NotificationCenter.default.addObserver(self, selector: #selector(self.sendText), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
         } else { //an error occured
           //Handle error
         }
       }
     }
-
+    
     //authentication using an authorization token (obtained using OAuth)
-
+    
   }
-
+  
+  @objc func tokenReceived() {
+    print("token received")
+    
+  }
+  
   func getOutputAudioConfig() -> DFOutputAudioConfig? {
     let defaults = UserDefaults.standard
     if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? [Int],
@@ -149,13 +170,13 @@ class StopwatchService {
     }
     return nil
   }
-
+  
   func getSentimentAnalysisConfig(sentimentSelected: Bool) -> DFSentimentAnalysisRequestConfig {
     let sentimentConfig = DFSentimentAnalysisRequestConfig()
     sentimentConfig.analyzeQueryTextSentiment = sentimentSelected
     return sentimentConfig
   }
-
+  
   func getQueryParmasFor() -> DFQueryParameters {
     let queryParams = DFQueryParameters()
     let defaults = UserDefaults.standard
@@ -164,7 +185,7 @@ class StopwatchService {
       let sentimentSelected =
         defaultItems.contains(BetaFeatureMenu.sentimentAnalysis.rawValue)
       queryParams.sentimentAnalysisRequestConfig = getSentimentAnalysisConfig(sentimentSelected: sentimentSelected)
-
+      
       if defaultItems.contains(BetaFeatureMenu.knowledgeConnector.rawValue) {
         getKnowledgeBasePath { (knowledgeBasePath) in
           queryParams.knowledgeBaseNamesArray = [knowledgeBasePath]
@@ -175,7 +196,7 @@ class StopwatchService {
     }
     return queryParams
   }
-
+  
   @objc func getKnowledgeBasePath(handler: @escaping (_ KnowledgeBasePath: String) -> Void) {
     // authenticate using an authorization token (obtained using OAuth)
     FCMTokenProvider.getToken(deviceID: "getDeviceIDFromSomewhere") { (shouldWait, token, error) in
@@ -209,9 +230,8 @@ class StopwatchService {
         //Handle error
       }
     }
-
   }
-
+  
   func stopStreaming() {
     if (!streaming) {
       return
@@ -219,7 +239,7 @@ class StopwatchService {
     writer.finishWithError(nil)
     streaming = false
   }
-
+  
   func isStreaming() -> Bool {
     return streaming
   }

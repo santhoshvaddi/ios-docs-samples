@@ -48,6 +48,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 
+
+  func fetchToken() {
+    StopwatchService.sharedInstance.getDeviceID { (deviceID) in
+      // authenticate using an authorization token (obtained using OAuth)
+      FCMTokenProvider.getToken(deviceID: deviceID) { (shouldWait, token, error) in
+        print("shouldWait: \(shouldWait), token: \(String(describing: token)), error: \(error?.localizedDescription ?? "")")
+      }
+    }
+  }
   // [START receive_message]
   func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
     // If you are receiving a notification message while your app is in the background,
@@ -74,15 +83,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // this callback will not be fired till the user taps on the notification launching the application.
     // TODO: Handle data of notification
     // With swizzling disabled you must let Messaging know about the message, for Analytics
-     Messaging.messaging().appDidReceiveMessage(userInfo)
+    Messaging.messaging().appDidReceiveMessage(userInfo)
     // Print message ID.
     if let messageID = userInfo[gcmMessageIDKey] {
       print("Message ID: \(messageID)")
     }
-
     // Print full message.
     print(userInfo)
-
     completionHandler(UIBackgroundFetchResult.newData)
   }
   // [END receive_message]
@@ -97,7 +104,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     print("APNs token retrieved: \(deviceToken)")
 
     // With swizzling disabled you must set the APNs token here.
-     Messaging.messaging().apnsToken = deviceToken
+    let deviceTokenString = deviceToken.base64EncodedString()
+    Messaging.messaging().apnsToken = deviceToken
+    fetchToken()
   }
 }
 
@@ -114,13 +123,14 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
     // With swizzling disabled you must let Messaging know about the message, for Analytics
     // Messaging.messaging().appDidReceiveMessage(userInfo)
     // Print message ID.
-    if let messageID = userInfo[gcmMessageIDKey] {
+    if let messageID = userInfo[gcmMessageIDKey], let aps = userInfo["aps"] as? [String: Any], let alert = aps["alert"] as? [String: Any], let token = alert["body"] as? String , let expiryTime = alert["title"] as? String {
       print("Message ID: \(messageID)")
+      let tokenData = [TokenServiceConstants.accessToken: token, TokenServiceConstants.expireTime: expiryTime]
+      UserDefaults.standard.set(tokenData, forKey: TokenServiceConstants.token)
     }
-
     // Print full message.
     print(userInfo)
-
+    NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
     // Change this to your preferred presentation option
     completionHandler([])
   }
@@ -130,14 +140,20 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
                               withCompletionHandler completionHandler: @escaping () -> Void) {
     let userInfo = response.notification.request.content.userInfo
     // Print message ID.
-    if let messageID = userInfo[gcmMessageIDKey] {
-      print("Message ID: \(messageID)")
-    }
+    //    if let messageID = userInfo[gcmMessageIDKey] {
+    //      print("Message ID: \(messageID)")
+    //    }
 
+    if let messageID = userInfo[gcmMessageIDKey], let aps = userInfo["aps"] as? [String: Any], let alert = aps["alert"] as? [String: Any], let token = alert["body"] as? String , let expiryTime = alert["title"] as? String {
+      print("Message ID: \(messageID)")
+      let tokenData = [TokenServiceConstants.accessToken: token, TokenServiceConstants.expireTime: expiryTime]
+      UserDefaults.standard.set(tokenData, forKey: TokenServiceConstants.token)
+    }
     // Print full message.
     print(userInfo)
-
+    NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
     completionHandler()
+
   }
 }
 // [END ios_10_message_handling]

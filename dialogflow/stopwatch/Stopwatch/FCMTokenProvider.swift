@@ -72,7 +72,7 @@ public class FCMTokenProvider {
     if isExpired() {
       NotificationCenter.default.post(name: NSNotification.Name(TokenServiceConstants.retreivingToken), object: nil)
       //this sample uses Firebase Auth signInAnonymously and you can insert any auth signin that they offer.
-      FirebaseApp.configure()
+      //FirebaseApp.configure()
       Auth.auth().signInAnonymously() { (authResult, error) in
         if error != nil {
           //Sign in failed
@@ -100,7 +100,6 @@ public class FCMTokenProvider {
   }
 }
 
-//Functions.functions().httpsCallable(FCMTokenServiceConstants.getTokenAPI).call(["deviceID": deviceID], completion: { (result, error) in
 
 
 
