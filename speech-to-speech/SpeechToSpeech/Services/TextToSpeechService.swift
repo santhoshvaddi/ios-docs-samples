@@ -18,15 +18,33 @@ import Foundation
 import googleapis
 import AVFoundation
 import AuthLibrary
+import Firebase
 
-
+protocol VoiceListProtocol {
+  func didReceiveVoiceList(voiceList: [FormattedVoice]?, errorString: String?)
+}
 
 class TextToSpeechRecognitionService {
   var client = TextToSpeech(host: ApplicationConstants.TTS_Host)
   private var writer = GRXBufferedPipe()
   private var call : GRPCProtoCall!
-  
+
   static let sharedInstance = TextToSpeechRecognitionService()
+  var voiceListDelegate: VoiceListProtocol?
+
+  func getDeviceID(callBack: @escaping (String)->Void) {
+    InstanceID.instanceID().instanceID { (result, error) in
+      if let error = error {
+        print("Error fetching remote instance ID: \(error)")
+        callBack( "")
+      } else if let result = result {
+        print("Remote instance ID token: \(result.token)")
+        callBack( result.token)
+      } else {
+        callBack( "")
+      }
+    }
+  }
 
   func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data?, _ error: String?) -> Void) {
     try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
@@ -95,31 +113,50 @@ class TextToSpeechRecognitionService {
       self.call.start()
     }
   }
+  @objc func getVoiceLists() {
+    SpeechRecognitionService.sharedInstance.getDeviceID { (deviceID) in
+      FCMTokenProvider.getToken(deviceID: deviceID, { (shouldWait, token, error) in
+        if let authT = token, shouldWait == false {//Token received execute code
+          self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
+            if let errorStr = error?.localizedDescription {
+              self.voiceListDelegate?.didReceiveVoiceList(voiceList: nil, errorString: errorStr)
+              //                        completionHandler(nil, errorStr)
+              return
+            }
+            print(listVoiceResponse ?? "No voice list found")
+            if let listVoiceResponse = listVoiceResponse {
+              let formattedVoice = FormattedVoice.formatVoiceResponse(listVoiceResponse: listVoiceResponse)
+              self.voiceListDelegate?.didReceiveVoiceList(voiceList: formattedVoice, errorString: nil)
+              //                        completionHandler(formattedVoice, nil)
+            }
+          })
+          self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+          // if the API key has a bundle ID restriction, specify the bundle ID like this
 
-  func getVoiceLists(completionHandler: @escaping ([FormattedVoice]?, String?) -> Void) {
-    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
-      self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
-        if let errorStr = error?.localizedDescription {
-          completionHandler(nil, errorStr)
-          return
-        }
-        print(listVoiceResponse ?? "No voice list found")
-        if let listVoiceResponse = listVoiceResponse {
-          let formattedVoice = FormattedVoice.formatVoiceResponse(listVoiceResponse: listVoiceResponse)
-          print("Formatted output: \(formattedVoice)")
-          completionHandler(formattedVoice, nil)
+          self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+
+          print("HEADERS:\(String(describing: self.call.requestHeaders))")
+
+          self.call.start()
+
+        } else if shouldWait == true {//Token will be sent via PN.
+
+          //Observe for notification
+
+          NotificationCenter.default.addObserver(self, selector: #selector(self.getVoiceLists), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+
+        } else {// an error occurred
+
+          //Handle error
+
         }
 
       })
 
-      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
-
-      // if the API key has a bundle ID restriction, specify the bundle ID like this
-
-      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-      print("HEADERS:\(String(describing: self.call.requestHeaders))")
-      self.call.start()
     }
+
+
+
   }
 }
 
@@ -241,20 +278,21 @@ struct FormattedVoice {
 }
 
 extension SsmlVoiceGender {
-    func getGenderString() -> String {
-        switch self {
-        case .gpbUnrecognizedEnumeratorValue:
-            return "Unspecified"
-        case .ssmlVoiceGenderUnspecified:
-            return "Unspecified"
-        case .male:
-            return "Male"
-        case .female:
-            return "Female"
-        case .neutral:
-            return "Neutral"
-        }
+  func getGenderString() -> String {
+    switch self {
+    case .gpbUnrecognizedEnumeratorValue:
+      return "Unspecified"
+    case .ssmlVoiceGenderUnspecified:
+      return "Unspecified"
+    case .male:
+      return "Male"
+    case .female:
+      return "Female"
+    case .neutral:
+      return "Neutral"
     }
+  }
 }
+
 
 
