@@ -147,16 +147,9 @@ class StopwatchService {
         }
       }
     }
-    
-    //authentication using an authorization token (obtained using OAuth)
-    
+
   }
-  
-  @objc func tokenReceived() {
-    print("token received")
-    
-  }
-  
+
   func getOutputAudioConfig() -> DFOutputAudioConfig? {
     let defaults = UserDefaults.standard
     if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? [Int],
@@ -198,36 +191,38 @@ class StopwatchService {
   }
   
   @objc func getKnowledgeBasePath(handler: @escaping (_ KnowledgeBasePath: String) -> Void) {
-    // authenticate using an authorization token (obtained using OAuth)
-    FCMTokenProvider.getToken(deviceID: "getDeviceIDFromSomewhere") { (shouldWait, token, error) in
-      if let authT = token, shouldWait == false { //Token received execute code
-        let knowledgeBase = DFKnowledgeBases(host: ApplicationConstants.Host)
-        let request = DFListKnowledgeBasesRequest()
-        request.parent = "projects/\(ApplicationConstants.ProjectName)/agent"
-        let call = knowledgeBase.rpcToListKnowledgeBases(with: request, handler: {(knowledgeBaseRes, error) in
-          if let error = error {
-            print("Error occured while calling knowledge base api \(error.localizedDescription)")
-            return
-          }
-          if let res = knowledgeBaseRes,
-            res.knowledgeBasesArray_Count > 0,
-            let lastKB = res.knowledgeBasesArray.lastObject as? DFKnowledgeBase,
-            let knowledgeBasePath = lastKB.name {
-            print("Source response for knowledge base: \(res)")
-            print("Found path:\(knowledgeBasePath)")
-            handler(knowledgeBasePath)
-          }
-        })
-        self.call.requestHeaders.setObject(NSString(string:authT),
-                                           forKey:NSString(string:"Authorization"))
-        call.start()
-        //Remove notification
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
-      } else if shouldWait == true { //Token will be sent via PN
-        //Observe for notification
-        NotificationCenter.default.addObserver(self, selector: #selector(self.getKnowledgeBasePath(handler:)), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: handler)
-      } else { //an error occured
-        //Handle error
+    getDeviceID { (deviceID) in
+      // authenticate using an authorization token (obtained using OAuth)
+      FCMTokenProvider.getToken(deviceID: "getDeviceIDFromSomewhere") { (shouldWait, token, error) in
+        if let authT = token, shouldWait == false { //Token received execute code
+          let knowledgeBase = DFKnowledgeBases(host: ApplicationConstants.Host)
+          let request = DFListKnowledgeBasesRequest()
+          request.parent = "projects/\(ApplicationConstants.ProjectName)/agent"
+          let call = knowledgeBase.rpcToListKnowledgeBases(with: request, handler: {(knowledgeBaseRes, error) in
+            if let error = error {
+              print("Error occured while calling knowledge base api \(error.localizedDescription)")
+              return
+            }
+            if let res = knowledgeBaseRes,
+              res.knowledgeBasesArray_Count > 0,
+              let lastKB = res.knowledgeBasesArray.lastObject as? DFKnowledgeBase,
+              let knowledgeBasePath = lastKB.name {
+              print("Source response for knowledge base: \(res)")
+              print("Found path:\(knowledgeBasePath)")
+              handler(knowledgeBasePath)
+            }
+          })
+          self.call.requestHeaders.setObject(NSString(string:authT),
+                                             forKey:NSString(string:"Authorization"))
+          call.start()
+          //Remove notification
+          NotificationCenter.default.removeObserver(self, name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+        } else if shouldWait == true { //Token will be sent via PN
+          //Observe for notification
+          NotificationCenter.default.addObserver(self, selector: #selector(self.getKnowledgeBasePath(handler:)), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: handler)
+        } else { //an error occured
+          //Handle error
+        }
       }
     }
   }

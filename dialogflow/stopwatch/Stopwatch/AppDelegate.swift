@@ -16,6 +16,7 @@
 import UIKit
 import UserNotifications
 import Firebase
+import AuthLibrary
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -33,7 +34,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     if #available(iOS 10.0, *) {
       // For iOS 10 display notification (sent via APNS)
       UNUserNotificationCenter.current().delegate = self
-
       let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
       UNUserNotificationCenter.current().requestAuthorization(
         options: authOptions,
@@ -48,7 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 
-
   func fetchToken() {
     StopwatchService.sharedInstance.getDeviceID { (deviceID) in
       // authenticate using an authorization token (obtained using OAuth)
@@ -57,26 +56,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
   }
+
   // [START receive_message]
   func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
     // If you are receiving a notification message while your app is in the background,
     // this callback will not be fired till the user taps on the notification launching the application.
     // TODO: Handle data of notification
     // With swizzling disabled you must let Messaging know about the message, for Analytics
-    // Messaging.messaging().appDidReceiveMessage(userInfo)
+    Messaging.messaging().appDidReceiveMessage(userInfo)
     // Print message ID.
     if let messageID = userInfo[gcmMessageIDKey] {
       print("Message ID: \(messageID)")
     }
-    guard let tokenData = userInfo as? [String: Any] else {
-      return
+    if let aps = userInfo["aps"] as? [String: Any], let alert = aps["alert"] as? [String: Any], let token = alert["body"] as? String , let expiryTime = alert["title"] as? String {
+      let tokenData = [ApplicationConstants.accessToken: token, ApplicationConstants.expireTime: expiryTime]
+      FCMTokenProvider.tokenFromAppDelegate(tokenDict: tokenData)
+      NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: tokenData)
     }
-    let tokenModel = "\(TokenServiceConstants.tokenType)\(tokenData[TokenServiceConstants.accessToken] as? String ?? "")"
-    UserDefaults.standard.set(tokenData, forKey: TokenServiceConstants.token)
-    NotificationCenter.default.post(name: NSNotification.Name(TokenServiceConstants.tokenReceived), object: tokenModel)
     print(userInfo)
   }
-
+  
   func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
                    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     // If you are receiving a notification message while your app is in the background,
@@ -88,23 +87,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     if let messageID = userInfo[gcmMessageIDKey] {
       print("Message ID: \(messageID)")
     }
+    if let aps = userInfo["aps"] as? [String: Any], let alert = aps["alert"] as? [String: Any], let token = alert["body"] as? String , let expiryTime = alert["title"] as? String {
+      let tokenData = [ApplicationConstants.accessToken: token, ApplicationConstants.expireTime: expiryTime]
+      FCMTokenProvider.tokenFromAppDelegate(tokenDict: tokenData)
+      NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: tokenData)
+    }
     // Print full message.
     print(userInfo)
-    completionHandler(UIBackgroundFetchResult.newData)
   }
   // [END receive_message]
   func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     print("Unable to register for remote notifications: \(error.localizedDescription)")
   }
-
+  
   // This function is added here only for debugging purposes, and can be removed if swizzling is enabled.
   // If swizzling is disabled then this function must be implemented so that the APNs token can be paired to
   // the FCM registration token.
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     print("APNs token retrieved: \(deviceToken)")
-
+    
     // With swizzling disabled you must set the APNs token here.
-    let deviceTokenString = deviceToken.base64EncodedString()
     Messaging.messaging().apnsToken = deviceToken
     fetchToken()
   }
@@ -113,47 +115,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 // [START ios_10_message_handling]
 @available(iOS 10, *)
 extension AppDelegate : UNUserNotificationCenterDelegate {
-
+  
   // Receive displayed notifications for iOS 10 devices.
   func userNotificationCenter(_ center: UNUserNotificationCenter,
                               willPresent notification: UNNotification,
                               withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
     let userInfo = notification.request.content.userInfo
-
+    
     // With swizzling disabled you must let Messaging know about the message, for Analytics
-    // Messaging.messaging().appDidReceiveMessage(userInfo)
+    Messaging.messaging().appDidReceiveMessage(userInfo)
     // Print message ID.
     if let messageID = userInfo[gcmMessageIDKey], let aps = userInfo["aps"] as? [String: Any], let alert = aps["alert"] as? [String: Any], let token = alert["body"] as? String , let expiryTime = alert["title"] as? String {
       print("Message ID: \(messageID)")
-      let tokenData = [TokenServiceConstants.accessToken: token, TokenServiceConstants.expireTime: expiryTime]
-      UserDefaults.standard.set(tokenData, forKey: TokenServiceConstants.token)
+      let tokenData = [ApplicationConstants.accessToken: token, ApplicationConstants.expireTime: expiryTime]
+      FCMTokenProvider.tokenFromAppDelegate(tokenDict: tokenData)
+      NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: tokenData)
     }
     // Print full message.
     print(userInfo)
-    NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
     // Change this to your preferred presentation option
     completionHandler([])
   }
-
+  
   func userNotificationCenter(_ center: UNUserNotificationCenter,
                               didReceive response: UNNotificationResponse,
                               withCompletionHandler completionHandler: @escaping () -> Void) {
     let userInfo = response.notification.request.content.userInfo
-    // Print message ID.
-    //    if let messageID = userInfo[gcmMessageIDKey] {
-    //      print("Message ID: \(messageID)")
-    //    }
-
     if let messageID = userInfo[gcmMessageIDKey], let aps = userInfo["aps"] as? [String: Any], let alert = aps["alert"] as? [String: Any], let token = alert["body"] as? String , let expiryTime = alert["title"] as? String {
       print("Message ID: \(messageID)")
-      let tokenData = [TokenServiceConstants.accessToken: token, TokenServiceConstants.expireTime: expiryTime]
-      UserDefaults.standard.set(tokenData, forKey: TokenServiceConstants.token)
+      let tokenData = [ApplicationConstants.accessToken: token, ApplicationConstants.expireTime: expiryTime]
+      NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: tokenData)
     }
     // Print full message.
     print(userInfo)
-    NotificationCenter.default.post(name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
     completionHandler()
-
   }
 }
 // [END ios_10_message_handling]
@@ -162,12 +157,12 @@ extension AppDelegate : MessagingDelegate {
   // [START refresh_token]
   func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
     print("Firebase registration token: \(fcmToken)")
-
+    
     let dataDict:[String: String] = ["token": fcmToken]
     NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
     // TODO: If necessary send token to application server.
     // Note: This callback is fired at each app startup and whenever a new token is generated.
   }
   // [END refresh_token]
-
+  
 }

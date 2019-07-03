@@ -28,10 +28,10 @@ class TextToSpeechRecognitionService {
   var client = TextToSpeech(host: ApplicationConstants.TTS_Host)
   private var writer = GRXBufferedPipe()
   private var call : GRPCProtoCall!
-
+  
   static let sharedInstance = TextToSpeechRecognitionService()
   var voiceListDelegate: VoiceListProtocol?
-
+  
   func getDeviceID(callBack: @escaping (String)->Void) {
     InstanceID.instanceID().instanceID { (result, error) in
       if let error = error {
@@ -45,74 +45,74 @@ class TextToSpeechRecognitionService {
       }
     }
   }
-
+  
   func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data?, _ error: String?) -> Void) {
-    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
-      let synthesisInput = SynthesisInput()
-      synthesisInput.text = text
-
-      let voiceSelectionParams = VoiceSelectionParams()
-      voiceSelectionParams.languageCode = "en-US"
-      //voiceSelectionParams.ssmlGender = SsmlVoiceGender.neutral
-
-      if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
-        let selectedTransTo = userPreference[ApplicationConstants.selectedTransTo] ?? ""
-        let selectedSynthName = userPreference[ApplicationConstants.selectedSynthName] ?? ""
-        let selectedVoiceType = userPreference[ApplicationConstants.selectedVoiceType] ?? ""
-
-        if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let voiceList = appDelegate.voiceLists {
-          let transTo = voiceList.filter {
-            return $0.languageName == selectedTransTo
+    let authT = FCMTokenProvider.getTokenFromUserDefaults()
+    let synthesisInput = SynthesisInput()
+    synthesisInput.text = text
+    
+    let voiceSelectionParams = VoiceSelectionParams()
+    voiceSelectionParams.languageCode = "en-US"
+    //voiceSelectionParams.ssmlGender = SsmlVoiceGender.neutral
+    
+    if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
+      let selectedTransTo = userPreference[ApplicationConstants.selectedTransTo] ?? ""
+      let selectedSynthName = userPreference[ApplicationConstants.selectedSynthName] ?? ""
+      let selectedVoiceType = userPreference[ApplicationConstants.selectedVoiceType] ?? ""
+      
+      if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let voiceList = appDelegate.voiceLists {
+        let transTo = voiceList.filter {
+          return $0.languageName == selectedTransTo
+        }
+        if let transTo = transTo.first {
+          let transToLangCode =  transTo.languageCode
+          voiceSelectionParams.languageCode = transToLangCode
+          
+          if let synthNameIndex = transTo.synthesisName.index(of: selectedSynthName){
+            let synthNameCode = transTo.synthesisNameCode[synthNameIndex]
+            voiceSelectionParams.name = synthNameCode
           }
-          if let transTo = transTo.first {
-            let transToLangCode =  transTo.languageCode
-            voiceSelectionParams.languageCode = transToLangCode
-
-            if let synthNameIndex = transTo.synthesisName.index(of: selectedSynthName){
-              let synthNameCode = transTo.synthesisNameCode[synthNameIndex]
-              voiceSelectionParams.name = synthNameCode
-            }
-            if let synthGenderIndex = transTo.synthesisGender.index(of: selectedVoiceType){
-              let synthGenderCode = transTo.synthesisGenderCode[synthGenderIndex]
-              voiceSelectionParams.ssmlGender = synthGenderCode
-            }
+          if let synthGenderIndex = transTo.synthesisGender.index(of: selectedVoiceType){
+            let synthGenderCode = transTo.synthesisGenderCode[synthGenderIndex]
+            voiceSelectionParams.ssmlGender = synthGenderCode
           }
         }
       }
-
-      let audioConfig = AudioConfig()
-      audioConfig.audioEncoding = AudioEncoding.mp3
-
-      let speechRequest = SynthesizeSpeechRequest()
-      speechRequest.audioConfig = audioConfig
-      speechRequest.input = synthesisInput
-      speechRequest.voice = voiceSelectionParams
-
-      self.call = self.client.rpcToSynthesizeSpeech(with: speechRequest, handler: { (synthesizeSpeechResponse, error) in
-        if error != nil {
-          print(error?.localizedDescription ?? "No error description available")
-          completionHandler(nil, error?.localizedDescription )
-          return
-        }
-        guard let response = synthesizeSpeechResponse else {
-          print("No response received")
-          return
-        }
-        print("Text to speech response\(response)")
-        guard let audioData =  response.audioContent else {
-          print("no audio data received")
-          return
-        }
-        completionHandler(audioData, nil)
-      })
-
-      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
-      // if the API key has a bundle ID restriction, specify the bundle ID like this
-      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-      print("HEADERS:\(String(describing: self.call.requestHeaders))")
-      self.call.start()
     }
+    
+    let audioConfig = AudioConfig()
+    audioConfig.audioEncoding = AudioEncoding.mp3
+    
+    let speechRequest = SynthesizeSpeechRequest()
+    speechRequest.audioConfig = audioConfig
+    speechRequest.input = synthesisInput
+    speechRequest.voice = voiceSelectionParams
+    
+    self.call = self.client.rpcToSynthesizeSpeech(with: speechRequest, handler: { (synthesizeSpeechResponse, error) in
+      if error != nil {
+        print(error?.localizedDescription ?? "No error description available")
+        completionHandler(nil, error?.localizedDescription )
+        return
+      }
+      guard let response = synthesizeSpeechResponse else {
+        print("No response received")
+        return
+      }
+      print("Text to speech response\(response)")
+      guard let audioData =  response.audioContent else {
+        print("no audio data received")
+        return
+      }
+      completionHandler(audioData, nil)
+    })
+    
+    self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+    // if the API key has a bundle ID restriction, specify the bundle ID like this
+    self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+    print("HEADERS:\(String(describing: self.call.requestHeaders))")
+    self.call.start()
   }
+  
   @objc func getVoiceLists() {
     SpeechRecognitionService.sharedInstance.getDeviceID { (deviceID) in
       FCMTokenProvider.getToken(deviceID: deviceID, { (shouldWait, token, error) in
@@ -132,31 +132,17 @@ class TextToSpeechRecognitionService {
           })
           self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
           // if the API key has a bundle ID restriction, specify the bundle ID like this
-
           self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-
           print("HEADERS:\(String(describing: self.call.requestHeaders))")
-
           self.call.start()
-
         } else if shouldWait == true {//Token will be sent via PN.
-
           //Observe for notification
-
           NotificationCenter.default.addObserver(self, selector: #selector(self.getVoiceLists), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
-
         } else {// an error occurred
-
           //Handle error
-
         }
-
       })
-
     }
-
-
-
   }
 }
 
@@ -167,7 +153,7 @@ struct FormattedVoice {
   var synthesisGender: [String] = []
   var synthesisNameCode: [String] = []
   var synthesisGenderCode: [SsmlVoiceGender] = []
-
+  
   static func formatVoiceResponse(listVoiceResponse: ListVoicesResponse) -> [FormattedVoice] {
     var result = [FormattedVoice]()
     for voice in listVoiceResponse.voicesArray {
@@ -177,20 +163,20 @@ struct FormattedVoice {
           var resultVoice = index.count > 0 ? (index.first ?? FormattedVoice()) : FormattedVoice()
           resultVoice.languageCode = (languageCode as? String) ?? ""
           resultVoice.languageName = convertLanguageCodes(languageCode: resultVoice.languageCode)
-
+          
           let name = getSynthesisName(name: voice.name)
           if !resultVoice.synthesisName.contains(name) {
             resultVoice.synthesisName.append(getSynthesisName(name: voice.name))
             resultVoice.synthesisNameCode.append(voice.name)
           }
-
+          
           let gender = getGender(name: voice.name, gender: voice.ssmlGender)
           if !resultVoice.synthesisGender.contains(gender) {
             resultVoice.synthesisGender.append(gender)
             resultVoice.synthesisGenderCode.append(voice.ssmlGender)
           }
           if index.count > 0 {
-
+            
             result.removeAll(where: {$0.languageCode == ((languageCode as? String) ?? "")})
           }
           result.append(resultVoice)
@@ -198,10 +184,10 @@ struct FormattedVoice {
       }
     }
     result = result.sorted(by: {$0.languageName.uppercased() < $1.languageName.uppercased()})
-
+    
     return result
   }
-
+  
   static func convertLanguageCodes(languageCode: String) -> String {
     var languageName = ""
     switch (languageCode) {
@@ -235,31 +221,31 @@ struct FormattedVoice {
       languageName = "Polish"
     case "pt-BR":
       languageName = "Portugese BR"
-
+      
     case "pt-PT":
       languageName = "Portugese"
-
+      
     case "ru-RU":
       languageName = "Russian"
-
+      
     case "sk-SK":
       languageName = "Slovak SK"
-
+      
     case "sv-SE":
       languageName = "Swedish"
-
+      
     case "tr-TR":
       languageName = "Turkish"
-
+      
     case "uk-UA":
       languageName = "Ukrainian UA"
-
+      
     default:
       languageName = languageCode
     }
     return "\(languageName) (\(languageCode))"
   }
-
+  
   static func getSynthesisName(name: String) -> String {
     let components = name.components(separatedBy: "-")
     if components.count > 2 {
@@ -267,7 +253,7 @@ struct FormattedVoice {
     }
     return ""
   }
-
+  
   static func getGender(name: String, gender: SsmlVoiceGender) -> String {
     let components = name.components(separatedBy: "-")
     if components.count > 3 {

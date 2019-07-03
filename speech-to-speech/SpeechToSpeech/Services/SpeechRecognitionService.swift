@@ -96,6 +96,7 @@ class SpeechRecognitionService {
               }
             }
 
+            //Creating streamingRecognizeRequest
             let streamingRecognitionConfig = StreamingRecognitionConfig()
             streamingRecognitionConfig.config = recognitionConfig
             streamingRecognitionConfig.singleUtterance = false
