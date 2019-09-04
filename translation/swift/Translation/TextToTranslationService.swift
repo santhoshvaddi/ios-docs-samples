@@ -26,11 +26,11 @@ class TextToTranslationService {
   private var call : GRPCProtoCall!
   static let sharedInstance = TextToTranslationService()
   var authToken: String = ""
-  
+
   private var session : String {
     return "projects/" + ApplicationConstants.projectID + "/agent/sessions/" + ApplicationConstants.SessionID
   }
-  
+
   func getDeviceID(callBack: @escaping (String)->Void) {
     InstanceID.instanceID().instanceID { (result, error) in
       if let error = error {
@@ -44,22 +44,24 @@ class TextToTranslationService {
       }
     }
   }
-  
+
   func textToSyntax(text:String, completionHandler: @escaping (_ response: TranslateTextResponse) -> Void) {
-    
+
     let translateText = TranslateTextRequest()
     translateText.contentsArray = [text]
     translateText.mimeType = ApplicationConstants.mimeType
-    translateText.sourceLanguageCode = "en-US"
-    translateText.targetLanguageCode = "es"
-    translateText.parent = "projects/\(ApplicationConstants.projectID)"
-    
+    let sourceLanguageCode = UserDefaults.standard.value(forKey: ApplicationConstants.sourceLanguageCode) as? String
+    let targetLanguageCode = UserDefaults.standard.value(forKey: ApplicationConstants.targetLanguageCode) as? String
+    translateText.sourceLanguageCode = sourceLanguageCode ?? "en-US"
+    translateText.targetLanguageCode = targetLanguageCode ?? "sr-Latn"
+    //translateText.parent = "projects/\(ApplicationConstants.projectID)"
+        translateText.parent = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)"
     let glossaryStatus = UserDefaults.standard.bool(forKey: ApplicationConstants.glossaryStatus)
     if glossaryStatus {
       let glossaryConfig = TranslateTextGlossaryConfig()
-      glossaryConfig.glossary = "projects/\(ApplicationConstants.projectID)/glossaries/\(ApplicationConstants.glossaryID)"
+      glossaryConfig.glossary = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)/glossaries/\(ApplicationConstants.glossaryID)"
     }
-    
+
     call = client.rpcToTranslateText(with: translateText) { (translateTextResponse, error) in
       if error != nil {
         print(error?.localizedDescription ?? "No error description available")
@@ -74,14 +76,14 @@ class TextToTranslationService {
     }
     self.call.requestHeaders.setObject(NSString(string:authToken),
                                        forKey:NSString(string:"Authorization"))
-    
+
     self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
     call.start()
   }
 
   func getLanguageCodes(completionHandler: @escaping (_ response: SupportedLanguages) -> Void) {
     let langRequest = GetSupportedLanguagesRequest()
-    langRequest.parent = "projects/\(ApplicationConstants.projectID)"
+    langRequest.parent = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)"
     call = client.rpcToGetSupportedLanguages(with: langRequest, handler: { (supportedLanguagesResponse, error) in
       if error != nil {
         print(error?.localizedDescription ?? "No error description available")
@@ -101,6 +103,27 @@ class TextToTranslationService {
     call.start()
   }
 
+  func getListOfGlossary(completionHandler: @escaping (_ response: ListGlossariesResponse) -> Void) {
+    let glossaryRequest = ListGlossariesRequest()
+    glossaryRequest.parent = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)"
+    call = client.rpcToListGlossaries(with: glossaryRequest, handler: { (listGlossariesResponse, error) in
+      if error != nil {
+        print(error?.localizedDescription ?? "No error description available")
+        return
+      }
+      guard let response = listGlossariesResponse else {
+        print("No response received")
+        return
+      }
+      print("listGlossariesResponse\(response)")
+      completionHandler(response)
+    })
+    self.call.requestHeaders.setObject(NSString(string:authToken),
+                                       forKey:NSString(string:"Authorization"))
+    self.call.requestHeaders.setObject(NSString(string: Bundle.main.bundleIdentifier!),
+                                       forKey: NSString(string: "X-Ios-Bundle-Identifier"))
+    call.start()
+  }
 }
 
 

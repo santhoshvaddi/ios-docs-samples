@@ -32,14 +32,10 @@ class ViewController: UIViewController {
   var tableViewDataSource = [[String: String]]()
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var pickerView: UIPickerView!
+  @IBOutlet weak var pickerBackgroundView: UIView!
 
   var sourceLanguageCode = ["hh", "mm", "ll", "eee", "fda"]//[String]()
-  var targetLanguageCode = ["hhe", "mem", "lel", "eefe", "fdfa"]//[String]()
-
-  lazy var alert : UIAlertController = {
-    let alert = UIAlertController(title: ApplicationConstants.tokenFetchingAlertMessage, message: ApplicationConstants.tokenFetchingAlertMessage, preferredStyle: .alert)
-    return alert
-  }()
+  var targetLanguageCode = ["hh", "mm", "ll", "eee", "fda"]//[String]()
 
   //init with nib name
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -61,7 +57,6 @@ class ViewController: UIViewController {
     self.title = ApplicationConstants.title
     setUpNavigationBarAndItems()
     registerKeyboardNotifications()
-    setupPickerView()
     self.view.addSubview(inputTextField)
     inputTextField.backgroundColor = .white
     inputTextField.returnKeyType = .send
@@ -93,7 +88,31 @@ class ViewController: UIViewController {
   @IBAction func dismissKeyboardAction(_ sender:Any) {
     inputTextField.resignFirstResponder()
   }
+  @IBAction func reverseLanguagesAction(_ sender: Any) {
+    print("reverseLanguagesAction")
+    let sourceCodeIndex = pickerView.selectedRow(inComponent: 0)
+    let targetCodeIndex = pickerView.selectedRow(inComponent: 1)
+    pickerView.selectRow(targetCodeIndex, inComponent: 0, animated: true)
+    pickerView.selectRow(sourceCodeIndex, inComponent: 1, animated: true)
+  }
 
+  @IBAction func doneButtonAction(_ sender: Any) {
+    pickerBackgroundView.isHidden = true
+    view.sendSubviewToBack(pickerBackgroundView)
+    let sourceCodeIndex = pickerView.selectedRow(inComponent: 0)
+    let targetCodeIndex = pickerView.selectedRow(inComponent: 1)
+    let sourceCode = sourceLanguageCode[sourceCodeIndex]
+    let targetCode = targetLanguageCode[targetCodeIndex]
+    print("SourceCode = \(sourceCode), TargetCode = \(targetCode)")
+    UserDefaults.standard.set(sourceCode, forKey: ApplicationConstants.sourceLanguageCode)
+    UserDefaults.standard.set(targetCode, forKey: ApplicationConstants.targetLanguageCode)
+
+
+  }
+  @IBAction func cancelButtonAction(_ sender: Any) {
+    pickerBackgroundView.isHidden = true
+    view.sendSubviewToBack(pickerBackgroundView)
+  }
   func setUpNavigationBarAndItems() {
     //Initialize and add AppBar
     self.addChild(appBar.headerViewController)
@@ -125,10 +144,10 @@ class ViewController: UIViewController {
 
     present(alertVC, animated: true)
   }
-  
+
   @objc func presentNavigationDrawer() {
     // present picker view with languages
-
+    self.presentPickerView()
     TextToTranslationService.sharedInstance.getLanguageCodes { (supportedLanguages) in
       if supportedLanguages.languagesArray_Count > 0, let languages = supportedLanguages.languagesArray as? [SupportedLanguage] {
         self.sourceLanguageCode = languages.filter({return $0.supportSource }).map({ (supportedLanguage) -> String in
@@ -143,42 +162,22 @@ class ViewController: UIViewController {
   }
 
   func presentPickerView() {
-    pickerView.isHidden = false
-    view.bringSubviewToFront(pickerView)
+    pickerBackgroundView.isHidden = false
+    view.bringSubviewToFront(pickerBackgroundView)
     pickerView.reloadAllComponents()
+    guard let sourceCode = UserDefaults.standard.value(forKey: ApplicationConstants.sourceLanguageCode) as? String,
+      let targetCode = UserDefaults.standard.value(forKey: ApplicationConstants.targetLanguageCode)  as? String,
+      let sourceIndex = sourceLanguageCode.index(of: sourceCode),
+      let targetIndex = targetLanguageCode.index(of: targetCode)
+      else { return }
 
+    pickerView.selectRow(sourceIndex, inComponent: 0, animated: true)
+    pickerView.selectRow(targetIndex, inComponent: 1, animated: true)
+    TextToTranslationService.sharedInstance.getListOfGlossary { (response) in
+      print("getListOfGlossary")
+
+    }
   }
-
-  func setupPickerView() {
-    let toolBar = UIToolbar()
-    toolBar.barStyle = UIBarStyle.default
-    toolBar.isTranslucent = true
-    toolBar.tintColor = UIColor(red: 76/255, green: 217/255, blue: 100/255, alpha: 1)
-    toolBar.sizeToFit()
-
-    let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pickerDoneButtonTapped))
-    let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-    let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pickerCancelButtonTapped))
-
-    toolBar.setItems([cancelButton, spaceButton, doneButton], animated: false)
-    toolBar.isUserInteractionEnabled = true
-
-    //pickerView.setValue(toolBar, forKey: "inputAccessoryView")
-    inputTextField.inputAccessoryView = toolBar
-    inputTextField.inputView = pickerView
-  }
-
-  @objc func pickerDoneButtonTapped() {
-    pickerView.isHidden = true
-    view.sendSubviewToBack(pickerView)
-  }
-
-  @objc func pickerCancelButtonTapped() {
-    pickerView.isHidden = true
-    view.sendSubviewToBack(pickerView)
-  }
-
-
 }
 
 extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
