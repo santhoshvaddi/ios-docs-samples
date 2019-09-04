@@ -111,26 +111,33 @@
                                 </connections>
                             </tableView>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="siU-FM-6mB">
-                                <rect key="frame" x="0.0" y="407" width="375" height="260"/>
+                                <rect key="frame" x="0.0" y="403" width="375" height="264"/>
                                 <subviews>
                                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YBL-JM-uXl">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="48"/>
                                         <items>
-                                            <barButtonItem title="Source" id="UkF-sX-70v"/>
+                                            <barButtonItem title="Source" id="UkF-sX-70v">
+                                                <color key="tintColor" red="0.30941712856292725" green="0.52416509389877319" blue="0.95691150426864624" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            </barButtonItem>
                                             <barButtonItem width="42" systemItem="fixedSpace" id="ynC-ZA-Kjs"/>
-                                            <barButtonItem systemItem="add" id="gKS-4v-e7X">
+                                            <barButtonItem image="baseline_swap_horiz_black_48pt" id="gKS-4v-e7X">
+                                                <color key="tintColor" red="0.31331303715705872" green="0.52811020612716675" blue="0.96083313226699829" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <connections>
                                                     <action selector="reverseLanguagesAction:" destination="tru-Bn-j4X" id="BEa-aB-3Tx"/>
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem systemItem="flexibleSpace" id="llB-nz-ywA"/>
-                                            <barButtonItem title="Target" id="ble-Nj-Pyl"/>
+                                            <barButtonItem title="Target" id="ble-Nj-Pyl">
+                                                <color key="tintColor" red="0.31331303715705872" green="0.52811020612716675" blue="0.96083313226699829" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            </barButtonItem>
                                             <barButtonItem style="done" systemItem="cancel" id="JHO-qp-0tG">
+                                                <color key="tintColor" red="0.31331303715705872" green="0.52811020612716675" blue="0.96083313226699829" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <connections>
                                                     <action selector="cancelButtonAction:" destination="tru-Bn-j4X" id="lav-Ja-gGG"/>
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem title="Done" style="done" id="JqW-yl-VG3">
+                                                <color key="tintColor" red="0.31331303715705872" green="0.52811020612716675" blue="0.96083313226699829" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <connections>
                                                     <action selector="doneButtonAction:" destination="tru-Bn-j4X" id="CNB-5l-92A"/>
                                                 </connections>
@@ -138,7 +145,7 @@
                                         </items>
                                     </toolbar>
                                     <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C6a-Fm-753">
-                                        <rect key="frame" x="0.0" y="44" width="305" height="216"/>
+                                        <rect key="frame" x="0.0" y="48" width="305" height="216"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
                                             <outlet property="dataSource" destination="tru-Bn-j4X" id="ZBx-lA-5uy"/>
@@ -192,4 +199,7 @@
             </objects>
         </scene>
     </scenes>
+    <resources>
+        <image name="baseline_swap_horiz_black_48pt" width="48" height="48"/>
+    </resources>
 </document>

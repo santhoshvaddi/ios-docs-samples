@@ -13,17 +13,20 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 ## Setup
 
 - Create a project (or use an existing one) in the [Google Cloud Console][cloud-console]
-- [Enable billing][billing] and the
-- [Translate API](https://console.cloud.google.com/apis/library/translate.googleapis.com)
-- [IAM Service Account Credentials API](https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com).
+- Enable the [Translate API](https://console.cloud.google.com/apis/library/translate.googleapis.com)
+- Enable the [IAM Service Account Credentials API](https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com).
+- [Enable billing][billing]
+- Be sure that you have gone through the steps to use the glossary feature on this sample by [Create glossary](https://cloud.google.com/translate/docs/glossary#create_a_glossary) on your cloud.
+- Upload the `Translation-glossary.csv` on your ]GCP storage](https://console.cloud.google.com/storage/) which is located in the `ios-docs-samples/Translation/swift/` directory to test the glossary feature on this sample. 
 - [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: `Cloud Translation API Editor`. Example name: `translate-client`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
 
 ###  Setup the app
 - Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
-- `cd ios-docs-samples/translation/` 
+- `cd ios-docs-samples/translation/swift/` 
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `Translation.xcworkspace` and not `Translation.xcodeproj`.
 - In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `Translation` directory.
 - Find the line where the `projectID` is set. Replace the `your-project-identifier` string with the identifier for your Google Cloud Project.
+- Find the line where `glossaryID` is set. Replace the `your-glossary-id` string with the glossary id which you have created above.
 - Go to the project editor for your target and then click on the Capabilities tab. Look for Push Notifications and toggle its value to ON
 
 ###  Setup Firebase on the application:
