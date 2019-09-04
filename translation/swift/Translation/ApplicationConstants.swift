@@ -22,7 +22,7 @@ struct ApplicationConstants {
   static let languageCode = "en-US"
   static let projectID = "your-project-identifier"
   static let SessionID = "001"
-  //static let locationID = "global"
+  static let locationID = "global"
   static let glossaryID = "cloudtranslateglossary"
 }
 
@@ -53,6 +53,8 @@ extension ApplicationConstants {
   static let category = "Category"
   static let tableViewCellID = "Cell"
   static let menuDrawerTitle = "Tap to enable other analysis for your text"
+  static let sourceLanguageCode = "sourceLanguageCode"
+  static let targetLanguageCode = "targetLanguageCode"
 }
 
 extension ApplicationConstants {
