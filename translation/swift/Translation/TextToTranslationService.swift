@@ -54,7 +54,6 @@ class TextToTranslationService {
     let targetLanguageCode = UserDefaults.standard.value(forKey: ApplicationConstants.targetLanguageCode) as? String
     translateText.sourceLanguageCode = sourceLanguageCode ?? "en-US"
     translateText.targetLanguageCode = targetLanguageCode ?? "sr-Latn"
-    //translateText.parent = "projects/\(ApplicationConstants.projectID)"
         translateText.parent = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)"
     let glossaryStatus = UserDefaults.standard.bool(forKey: ApplicationConstants.glossaryStatus)
     if glossaryStatus {

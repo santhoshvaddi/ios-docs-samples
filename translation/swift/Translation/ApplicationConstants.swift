@@ -22,8 +22,8 @@ struct ApplicationConstants {
   static let languageCode = "en-US"
   static let projectID = "your-project-identifier"
   static let SessionID = "001"
-  static let locationID = "global"
-  static let glossaryID = "cloudtranslateglossary"
+  static let locationID = "us-central1"
+  static let glossaryID = " your-glossary-ID"
 }
 
 extension ApplicationConstants {
