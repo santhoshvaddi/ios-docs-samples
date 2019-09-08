@@ -167,14 +167,14 @@ class ViewController: UIViewController {
     pickerView.reloadAllComponents()
     guard let sourceCode = UserDefaults.standard.value(forKey: ApplicationConstants.sourceLanguageCode) as? String,
       let targetCode = UserDefaults.standard.value(forKey: ApplicationConstants.targetLanguageCode)  as? String,
-      let sourceIndex = sourceLanguageCode.index(of: sourceCode),
-      let targetIndex = targetLanguageCode.index(of: targetCode)
+      let sourceIndex = sourceLanguageCode.firstIndex(of: sourceCode),
+      let targetIndex = targetLanguageCode.firstIndex(of: targetCode)
       else { return }
 
     pickerView.selectRow(sourceIndex, inComponent: 0, animated: true)
     pickerView.selectRow(targetIndex, inComponent: 1, animated: true)
-    TextToTranslationService.sharedInstance.getListOfGlossary { (response) in
-      print("getListOfGlossary")
+    TextToTranslationService.sharedInstance.getGlossary { (response) in
+      print("getGlossary")
 
     }
   }
@@ -245,16 +245,16 @@ extension ViewController: UITextFieldDelegate {
 
   //start sending text
   func textToTranslation(text: String) {
-    TextToTranslationService.sharedInstance.textToSyntax(text: text, completionHandler:
+    TextToTranslationService.sharedInstance.textToTranslate(text: text, completionHandler:
       { (response) in
         //Handle success response
         var responseText = ""
         if response.glossaryTranslationsArray_Count > 0, let tResponse = response.glossaryTranslationsArray.firstObject as? Translation {
-          responseText = tResponse.translatedText
-        } else if response.translationsArray_Count > 0, let tResponse = response.translationsArray.firstObject as? Translation {
-          responseText = tResponse.translatedText
+          responseText = "Glossary: " + tResponse.translatedText + "\n\n"
         }
-
+        if response.translationsArray_Count > 0, let tResponse = response.translationsArray.firstObject as? Translation {
+          responseText += ("Translated: " + tResponse.translatedText)
+        }
         if !responseText.isEmpty {
           self.tableViewDataSource.append([ApplicationConstants.botKey: responseText])
           self.tableView.insertRows(at: [IndexPath(row: self.tableViewDataSource.count - 1, section: 0)], with: .automatic)
