@@ -16,13 +16,14 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 - Enable the [Translate API](https://console.cloud.google.com/apis/library/translate.googleapis.com)
 - Enable the [IAM Service Account Credentials API](https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com).
 - [Enable billing][billing]
-- Be sure that you have gone through the steps to use the glossary feature on this sample by [Create glossary](https://cloud.google.com/translate/docs/glossary#create_a_glossary) on your cloud.
-- Upload the `Translation-glossary.csv` on your ]GCP storage](https://console.cloud.google.com/storage/) which is located in the `ios-docs-samples/Translation/swift/` directory to test the glossary feature on this sample. 
-- [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: `Cloud Translation API Editor`. Example name: `translate-client`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
+- [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM roles: `Cloud Translation API Editor` and `Storage Object Admin`. Example name: `translation-glossary`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
+- Be sure that you have gone through the steps to use the glossary feature in this sample by [Create glossary](https://cloud.google.com/translate/docs/glossary#create_a_glossary) on your cloud.
+- Go to  [GCP Storage consloe](https://console.cloud.google.com/storage/) tap on create a new bucket and follow the instructions.
 
 ###  Setup the app
 - Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
 - `cd ios-docs-samples/translation/swift/` 
+- Upload the `Translation-glossary.csv` on your GCP storage's newly created bucket (example .csv file can be find in this `ios-docs-samples/Translation/swift/` directory to test the glossary feature in this sample). 
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `Translation.xcworkspace` and not `Translation.xcodeproj`.
 - In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `Translation` directory.
 - Find the line where the `projectID` is set. Replace the `your-project-identifier` string with the identifier for your Google Cloud Project.
@@ -45,7 +46,8 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
 - "1. Set up Node.js and the Firebase CLI"
 - "2. Initialize Firebase SDK for Cloud Functions". 
 - Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/functions/tokenservice/functions/index.js).
-- Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`dialogflow-client`) and project id. 
+- Replace scope in line 79 with `scope: ['https://www.googleapis.com/auth/cloud-platform'],`
+- Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`translation-glossary`) and project id. 
 - Deploy getOAuthToken method by running command:
 ```
 firebase deploy -—only functions
@@ -57,6 +59,11 @@ firebase deploy -—only functions
 ## Run the app
 
 - You are now ready to build and run the project. In Xcode you can do this by clicking the 'Play' button in the top left. This will launch the app on the simulator or on the device you've selected. Be sure that the 'Translation' target is selected in the popup near the top left of the Xcode window. 
+- By tapping on the Menu button in top left corner of the application, where the user can select source and target languages from the picker view.
+- By tappng on Glossary button in top right corner of the application, where the user can enable or disable the glossary.
+- Tap the `Type your input` text field. This sends the text to the TextToTranslationService class, which sends it to the Translation Service. Once the response `TranslateTextResponse` comes, The viewcontroller extracts translated text  from it and displays it on the screen.
+- Right side will be the users query where as the left side will be translated response. 
+- The chosen options will be stored in the user defaults for subsequent visits, and the fields will be repopulated.
 
 
 [cloud-console]: https://console.cloud.google.com

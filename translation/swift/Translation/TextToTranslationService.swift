@@ -45,7 +45,7 @@ class TextToTranslationService {
     }
   }
 
-  func textToSyntax(text:String, completionHandler: @escaping (_ response: TranslateTextResponse) -> Void) {
+  func textToTranslate(text:String, completionHandler: @escaping (_ response: TranslateTextResponse) -> Void) {
 
     let translateText = TranslateTextRequest()
     translateText.contentsArray = [text]
@@ -53,14 +53,15 @@ class TextToTranslationService {
     let sourceLanguageCode = UserDefaults.standard.value(forKey: ApplicationConstants.sourceLanguageCode) as? String
     let targetLanguageCode = UserDefaults.standard.value(forKey: ApplicationConstants.targetLanguageCode) as? String
     translateText.sourceLanguageCode = sourceLanguageCode ?? "en-US"
-    translateText.targetLanguageCode = targetLanguageCode ?? "sr-Latn"
-        translateText.parent = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)"
+    translateText.targetLanguageCode = targetLanguageCode ?? "es"
+    translateText.parent = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)"
     let glossaryStatus = UserDefaults.standard.bool(forKey: ApplicationConstants.glossaryStatus)
     if glossaryStatus {
       let glossaryConfig = TranslateTextGlossaryConfig()
       glossaryConfig.glossary = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)/glossaries/\(ApplicationConstants.glossaryID)"
+      glossaryConfig.ignoreCase = true
+      translateText.glossaryConfig = glossaryConfig
     }
-
     call = client.rpcToTranslateText(with: translateText) { (translateTextResponse, error) in
       if error != nil {
         print(error?.localizedDescription ?? "No error description available")
@@ -75,7 +76,6 @@ class TextToTranslationService {
     }
     self.call.requestHeaders.setObject(NSString(string:authToken),
                                        forKey:NSString(string:"Authorization"))
-
     self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
     call.start()
   }
@@ -116,6 +116,63 @@ class TextToTranslationService {
       }
       print("listGlossariesResponse\(response)")
       completionHandler(response)
+    })
+    self.call.requestHeaders.setObject(NSString(string:authToken),
+                                       forKey:NSString(string:"Authorization"))
+    self.call.requestHeaders.setObject(NSString(string: Bundle.main.bundleIdentifier!),
+                                       forKey: NSString(string: "X-Ios-Bundle-Identifier"))
+    call.start()
+  }
+
+  func getGlossary(completionHandler: @escaping (_ response: ListGlossariesResponse) -> Void) {
+    let glossaryRequest = GetGlossaryRequest()
+    glossaryRequest.name = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)/glossaries/\(ApplicationConstants.glossaryID)"
+    call = client.rpcToGetGlossary(with: glossaryRequest, handler: { (listGlossariesResponse, error) in
+      if error != nil {
+        print(error?.localizedDescription ?? "No error description available")
+        return
+      }
+      guard let response = listGlossariesResponse else {
+        print("No response received")
+        return
+      }
+      print("rpcToGetGlossary\(response)")
+    })
+    self.call.requestHeaders.setObject(NSString(string:authToken),
+                                       forKey:NSString(string:"Authorization"))
+    self.call.requestHeaders.setObject(NSString(string: Bundle.main.bundleIdentifier!),
+                                       forKey: NSString(string: "X-Ios-Bundle-Identifier"))
+    call.start()
+  }
+
+
+  func createGlossary(completionHandler: @escaping (_ response: ListGlossariesResponse) -> Void) {
+    let glossaryRequest = CreateGlossaryRequest()
+    glossaryRequest.parent = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)"
+    let glossary = Glossary()
+    glossary.name = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)/glossaries/\(ApplicationConstants.glossaryID)"
+
+    let languageCodePair = Glossary_LanguageCodePair()
+    languageCodePair.sourceLanguageCode = "en"
+    languageCodePair.targetLanguageCode = "es"
+
+    let glossaryConfig = GlossaryInputConfig()
+    glossaryConfig.gcsSource.inputUri = "gs://cloudtranslateglossary/Translation-glossary.csv"
+
+    glossary.inputConfig = glossaryConfig
+    glossary.languagePair = languageCodePair
+    glossaryRequest.glossary = glossary
+
+    call = client.rpcToCreateGlossary(with: glossaryRequest, handler: { (listGlossariesResponse, error) in //Operation
+      if error != nil {
+        print(error?.localizedDescription ?? "No error description available")
+        return
+      }
+      guard let response = listGlossariesResponse else {
+        print("No response received")
+        return
+      }
+      print("rpcToGetGlossary\(response)")
     })
     self.call.requestHeaders.setObject(NSString(string:authToken),
                                        forKey:NSString(string:"Authorization"))
