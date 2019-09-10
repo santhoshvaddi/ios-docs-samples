@@ -5,4 +5,4 @@ This app demonstrate how to make API calls to the [Cloud Translation API](https:
 
 ## Contents
 
-### [Translation](Translation)
+### [swift](swift)

@@ -17,13 +17,13 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 - Enable the [IAM Service Account Credentials API](https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com).
 - [Enable billing][billing]
 - [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM roles: `Cloud Translation API Editor` and `Storage Object Admin`. Example name: `translation-glossary`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
+- Go to  [GCP Storage console](https://console.cloud.google.com/storage/) tap on create a new bucket and follow the instructions.
+- Upload the `Translation-glossary.csv` on your GCP storage's newly created bucket (example .csv file can be find in this `ios-docs-samples/Translation/swift/` directory to test the glossary feature in this sample). 
 - Be sure that you have gone through the steps to use the glossary feature in this sample by [Create glossary](https://cloud.google.com/translate/docs/glossary#create_a_glossary) on your cloud.
-- Go to  [GCP Storage consloe](https://console.cloud.google.com/storage/) tap on create a new bucket and follow the instructions.
 
 ###  Setup the app
 - Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
 - `cd ios-docs-samples/translation/swift/` 
-- Upload the `Translation-glossary.csv` on your GCP storage's newly created bucket (example .csv file can be find in this `ios-docs-samples/Translation/swift/` directory to test the glossary feature in this sample). 
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `Translation.xcworkspace` and not `Translation.xcodeproj`.
 - In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `Translation` directory.
 - Find the line where the `projectID` is set. Replace the `your-project-identifier` string with the identifier for your Google Cloud Project.
