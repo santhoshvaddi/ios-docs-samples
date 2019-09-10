@@ -13,7 +13,7 @@
         <!--View Controller-->
         <scene sceneID="fC8-ie-V9n">
             <objects>
-                <viewController id="tru-Bn-j4X" customClass="ViewController" customModule="TextToSpeech" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="tru-Bn-j4X" customClass="ViewController" customModule="Translation" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="NZD-6T-CwE">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -28,7 +28,7 @@
                                 <rect key="frame" x="0.0" y="64" width="375" height="539"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="selfCI" id="xNF-ID-BP5" customClass="ChatTableViewCell" customModule="TextToSpeech" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="selfCI" id="xNF-ID-BP5" customClass="ChatTableViewCell" customModule="Translation" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xNF-ID-BP5" id="kH4-Hx-h4G">
@@ -66,7 +66,7 @@
                                             <outlet property="selfText" destination="jye-u8-y0G" id="ebc-W5-vLC"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="intentCI" id="6PL-qU-vTG" customClass="ChatTableViewCell" customModule="TextToSpeech" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="intentCI" id="6PL-qU-vTG" customClass="ChatTableViewCell" customModule="Translation" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6PL-qU-vTG" id="VoB-AE-puN">
@@ -186,6 +186,9 @@
                     </view>
                     <connections>
                         <outlet property="pickerBackgroundView" destination="siU-FM-6mB" id="4YI-tJ-fDS"/>
+                        <outlet property="pickerSourceButton" destination="UkF-sX-70v" id="zn0-ha-DPh"/>
+                        <outlet property="pickerSwapButton" destination="gKS-4v-e7X" id="SlY-cd-sVv"/>
+                        <outlet property="pickerTagerButton" destination="ble-Nj-Pyl" id="aiv-k1-dYx"/>
                         <outlet property="pickerView" destination="C6a-Fm-753" id="OSG-19-ft1"/>
                         <outlet property="tableView" destination="2Hr-dr-yaI" id="vaD-ZK-5UX"/>
                     </connections>
