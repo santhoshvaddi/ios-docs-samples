@@ -27,6 +27,7 @@ class ViewController: UIViewController {
     textField.translatesAutoresizingMaskIntoConstraints = false
     return textField
   }()
+
   var  textFieldBottomConstraint: NSLayoutConstraint!
   let inputTextFieldController: MDCTextInputControllerOutlined
   var tableViewDataSource = [[String: String]]()
@@ -89,7 +90,7 @@ class ViewController: UIViewController {
     MDCTextFieldColorThemer.applySemanticColorScheme(colorScheme,
                                                      to: self.inputTextFieldController)
   }
-  
+
   @IBAction func dismissKeyboardAction(_ sender:Any) {
     inputTextField.resignFirstResponder()
   }
@@ -161,11 +162,16 @@ class ViewController: UIViewController {
     
     present(alertVC, animated: true)
   }
-  
+
   @objc func presentNavigationDrawer() {
     // present picker view with languages
     //    self.presentPickerView()
-    TextToTranslationService.sharedInstance.getLanguageCodes { (supportedLanguages) in
+    TextToTranslationService.sharedInstance.getLanguageCodes { (responseObj, error) in
+      if let errorText = error {
+        self.handleError(error: errorText)
+        return
+      }
+      guard let supportedLanguages = responseObj else {return}
       if supportedLanguages.languagesArray_Count > 0, let languages = supportedLanguages.languagesArray as? [SupportedLanguage] {
         self.sourceLanguageCode = languages.filter({return $0.supportSource }).map({ (supportedLanguage) -> String in
           return supportedLanguage.languageCode
@@ -181,7 +187,12 @@ class ViewController: UIViewController {
   
   func getListOfGlossary() {
     isPickerForLanguage = false
-    TextToTranslationService.sharedInstance.getListOfGlossary { (response) in
+    TextToTranslationService.sharedInstance.getListOfGlossary { (responseObj, error) in
+      if let errorText = error {
+        self.handleError(error: errorText)
+        return
+      }
+      guard let response = responseObj else {return}
       print("getListOfGlossary")
       if let glossaryArray = response.glossariesArray as? [Glossary] {
         self.glossaryList = glossaryArray
