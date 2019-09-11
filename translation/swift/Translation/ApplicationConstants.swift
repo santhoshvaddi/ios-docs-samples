@@ -40,6 +40,9 @@ extension ApplicationConstants {
   static let tokenReceived = "tokenReceived"
   static let retreivingToken = "RetrievingToken"
   static let getTokenAPI = "getOAuthToken"
+  static let tokenType = "Bearer "
+  static let noTokenError = "No token is available"
+  static let tokenFetchingAlertTitle = "Alert"
   static let tokenFetchingAlertMessage = "Retrieving token ..."
 }
 
