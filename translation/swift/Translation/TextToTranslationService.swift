@@ -166,14 +166,14 @@ class TextToTranslationService {
     let glossary = Glossary()
     glossary.name = "projects/\(ApplicationConstants.projectID)/locations/\(ApplicationConstants.locationID)/glossaries/\(ApplicationConstants.glossaryID)"
     
-    let languageCodePair = Glossary_LanguageCodesSet()
-    languageCodePair.languageCodesArray = ["en-GB", "ru", "fr", "pt-BR", "pt-PT", "es"]
+    let languageCodeSet = Glossary_LanguageCodesSet()
+    languageCodeSet.languageCodesArray = ["en", "en-GB", "ru", "fr", "pt-BR", "pt-PT", "es"]
     
     let glossaryConfig = GlossaryInputConfig()
-    glossaryConfig.gcsSource.inputUri = "gs://cloudtranslateglossary/Example_glossary - Sheet1.csv"
+    glossaryConfig.gcsSource.inputUri = "gs://bucket-name/glossary-filename"
     
     glossary.inputConfig = glossaryConfig
-    glossary.languageCodesSet = languageCodePair
+    glossary.languageCodesSet = languageCodeSet
     glossaryRequest.glossary = glossary
     
     call = client.rpcToCreateGlossary(with: glossaryRequest, handler: { (listGlossariesResponse, error) in //Operation
