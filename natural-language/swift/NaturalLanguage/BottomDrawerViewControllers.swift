@@ -113,7 +113,7 @@ class DrawerHeaderViewController: UIViewController,MDCBottomDrawerHeader {
     label.sizeToFit()
     return label
   }()
-  
+
   override var preferredContentSize: CGSize {
     get {
       return CGSize(width: view.bounds.width, height: preferredHeight)
@@ -122,24 +122,24 @@ class DrawerHeaderViewController: UIViewController,MDCBottomDrawerHeader {
       super.preferredContentSize = newValue
     }
   }
-  
+
   init() {
     super.init(nibName: nil, bundle: nil)
   }
-  
+
   required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
   }
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     view.addSubview(titleLabel)
   }
-  
+
   override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     titleLabel.center =
       CGPoint(x: self.view.frame.size.width / 2, y: self.preferredHeight - 20)
   }
-  
+
 }

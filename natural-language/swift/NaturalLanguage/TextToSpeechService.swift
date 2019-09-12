@@ -42,6 +42,7 @@ class TextToSpeechRecognitionService {
         return
       }
       print("analyzeSentimentResponse\(response)")
+      completionHandler(response)
     }
     call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this
@@ -68,6 +69,7 @@ class TextToSpeechRecognitionService {
         return
       }
       print("analyzeEntitiesResponse\(response)")
+      completionHandler(response)
     }
     call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this
@@ -103,30 +105,30 @@ class TextToSpeechRecognitionService {
   }
 
   func textToCategory(text:String, completionHandler: @escaping (_ response: AnalyzeSyntaxResponse) -> Void) {
-//    let documet: Document = Document()
-//    documet.content = text
-//    documet.type = Document_Type.plainText
-//
-//    let classifyText = ClassifyTextRequest()
-//    classifyText.document = documet
-//
-//    call = client.rpcToClassifyText(with: classifyText) { (classifyTextResponse, error) in
-//      print("classifyTextResponse : \(String(describing: classifyTextResponse))")
-//      if error != nil {
-//        print(error?.localizedDescription ?? "No error description available")
-//        return
-//      }
-//      guard let response = classifyTextResponse else {
-//        print("No response received")
-//        return
-//      }
-//      print("classifyTextResponse\(response)")
-//    }
-//    call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
-//    // if the API key has a bundle ID restriction, specify the bundle ID like this
-//    call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-//    print("HEADERS:\(String(describing: call.requestHeaders))")
-//    call.start()
+    //    let documet: Document = Document()
+    //    documet.content = text
+    //    documet.type = Document_Type.plainText
+    //
+    //    let classifyText = ClassifyTextRequest()
+    //    classifyText.document = documet
+    //
+    //    call = client.rpcToClassifyText(with: classifyText) { (classifyTextResponse, error) in
+    //      print("classifyTextResponse : \(String(describing: classifyTextResponse))")
+    //      if error != nil {
+    //        print(error?.localizedDescription ?? "No error description available")
+    //        return
+    //      }
+    //      guard let response = classifyTextResponse else {
+    //        print("No response received")
+    //        return
+    //      }
+    //      print("classifyTextResponse\(response)")
+    //    }
+    //    call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
+    //    // if the API key has a bundle ID restriction, specify the bundle ID like this
+    //    call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+    //    print("HEADERS:\(String(describing: call.requestHeaders))")
+    //    call.start()
   }
 }
 

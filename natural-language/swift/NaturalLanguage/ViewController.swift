@@ -16,8 +16,10 @@
 
 import UIKit
 import MaterialComponents
+import googleapis
 
 class ViewController: UIViewController {
+  @IBOutlet weak var entityTableView: UITableView!
 
   @IBOutlet weak var TextLabel: UILabel!
   var appBar = MDCAppBar()
@@ -32,6 +34,8 @@ class ViewController: UIViewController {
   let headerViewController = DrawerHeaderViewController()
   let contentViewController = DrawerContentViewController()
 
+  var entityDataSource = [Entity]()
+  var sentimentDataSource = [Sentence]()
 
   //init with nib name
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -204,10 +208,28 @@ extension ViewController: UITextFieldDelegate {
       }
     }
   }
+}
+
+//MARK: API calls
+extension ViewController {
   func textToSentimentAnalysis(text: String) {
     TextToSpeechRecognitionService.sharedInstance.textToSentiment(text: text, completionHandler:
       { (response) in
         //Handle success response
+        let sentence = Sentence()
+        sentence.sentiment = response.documentSentiment
+        sentence.text.content = "Entire document's sentiment analysis"
+        self.sentimentDataSource.append(sentence)
+
+        let sentence2 = Sentence()
+        sentence2.text.content = "Element wise Sentiment analysis"
+        self.sentimentDataSource.append(sentence2)
+        if let sentencesArray = response.sentencesArray as? [Sentence] {
+          self.sentimentDataSource.append(contentsOf: sentencesArray)
+        }
+        self.entityTableView.reloadData()
+        self.entityTableView.layer.borderColor =  #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
+        self.entityTableView.layer.borderWidth = 1.0
     })
   }
 
@@ -215,6 +237,11 @@ extension ViewController: UITextFieldDelegate {
     TextToSpeechRecognitionService.sharedInstance.textToEntity(text: text, completionHandler:
       { (response) in
         //Handle success response
+        guard let entityArray = response.entitiesArray as? [Entity] else {return}
+        self.entityDataSource  = entityArray
+        self.entityTableView.reloadData()
+        self.entityTableView.layer.borderColor = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)
+        self.entityTableView.layer.borderWidth = 1.0
     })
   }
 
@@ -233,5 +260,47 @@ extension ViewController: UITextFieldDelegate {
   }
 }
 
+//MARK:- UITableViewDataSource
+extension ViewController: UITableViewDataSource {
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    let defaults = UserDefaults.standard
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems) {
+      switch selectedAnalysis {
+      case .entityAnalysis:
+        return entityDataSource.count
+      case .sentimentAnalysis:
+        return sentimentDataSource.count
+      case .syntaxAnalysis:
+        break
+      case .category:
+        break
+      }
+    }
+    return 0
+  }
+
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let defaults = UserDefaults.standard
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems) {
+      switch selectedAnalysis {
+      case .entityAnalysis:
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "EntityTableViewCell", for: indexPath) as? EntityTableViewCell, entityDataSource.count > indexPath.row else { return UITableViewCell() }
+        cell.configureWith(entity: entityDataSource[indexPath.row])
+        return cell
+      case .sentimentAnalysis:
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SentimentTableViewCell", for: indexPath) as? SentimentTableViewCell, sentimentDataSource.count > indexPath.row else { return UITableViewCell() }
+        cell.configureWith(sentence: sentimentDataSource[indexPath.row])
+        return cell
+      case .syntaxAnalysis:
+        break
+      case .category:
+        break
+      }
+    }
+    return UITableViewCell()
+
+  }
+
+}
 
 
