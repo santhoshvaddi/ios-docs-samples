@@ -130,7 +130,7 @@ class ViewController: UIViewController {
     appBar.addSubviewsToParent()
     let barButtonLeadingItem = UIBarButtonItem()
     barButtonLeadingItem.tintColor = ApplicationScheme.shared.colorScheme.primaryColorVariant
-    barButtonLeadingItem.title = ApplicationConstants.moreButtonTitle
+    barButtonLeadingItem.image = #imageLiteral(resourceName: "baseline_swap_horiz_black_48pt")
     barButtonLeadingItem.target = self
     barButtonLeadingItem.action = #selector(presentNavigationDrawer)
     appBar.navigationBar.backItem = barButtonLeadingItem
