@@ -18,7 +18,6 @@ import Foundation
 
 //MARK: Stopwatch service
 struct ApplicationConstants {
-  static let API_KEY = "YOUR API_KEY"
   static let Host = "language.googleapis.com"
   static let languageCode = "en-US"
 }
@@ -26,6 +25,20 @@ struct ApplicationConstants {
 extension ApplicationConstants {
   static let queryTextFieldPlaceHolder = "Type your input"
   static let menuItemChangedNotification = "menuItemChangedNotification"
+}
+
+//MARK: Token generator constants
+extension ApplicationConstants {
+  static let token = "Token"
+  static let accessToken = "accessToken"
+  static let expireTime = "expireTime"
+  static let tokenReceived = "tokenReceived"
+  static let retreivingToken = "RetrievingToken"
+  static let getTokenAPI = "getOAuthToken"
+  static let tokenType = "Bearer "
+  static let noTokenError = "No token is available"
+  static let tokenFetchingAlertTitle = "Alert"
+  static let tokenFetchingAlertMessage = "Retrieving token ..."
 }
 
 //MARK: Bottom drawer

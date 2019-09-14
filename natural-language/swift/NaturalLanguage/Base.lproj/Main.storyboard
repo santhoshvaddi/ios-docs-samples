@@ -19,13 +19,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6yO-1n-oSV">
-                                <rect key="frame" x="20" y="40" width="335" height="0.0"/>
+                                <rect key="frame" x="20" y="64" width="335" height="0.0"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="0Ra-e8-YQn">
-                                <rect key="frame" x="0.0" y="73" width="375" height="460"/>
+                                <rect key="frame" x="0.0" y="104" width="375" height="429"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="EntityTableViewCell" rowHeight="160" id="Kmo-AS-ipy" customClass="EntityTableViewCell" customModule="NaturalLanguage" customModuleProvider="target">
@@ -156,13 +156,13 @@
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lUQ-PW-guj">
                                                             <rect key="frame" x="0.0" y="10" width="355" height="4"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <nil key="textColor"/>
+                                                            <color key="textColor" red="0.0090147862210869789" green="0.99145334959030151" blue="0.46040409803390503" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1CD-Pr-1g3">
                                                             <rect key="frame" x="0.0" y="24" width="355" height="0.0"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <nil key="textColor"/>
+                                                            <color key="textColor" red="0.98988372087478638" green="0.51978057622909546" blue="0.010512237437069416" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
@@ -207,19 +207,20 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="0Ra-e8-YQn" firstAttribute="top" secondItem="6yO-1n-oSV" secondAttribute="bottom" constant="33" id="2cG-08-zTo"/>
+                            <constraint firstItem="0Ra-e8-YQn" firstAttribute="top" secondItem="6yO-1n-oSV" secondAttribute="bottom" constant="40" id="2cG-08-zTo"/>
                             <constraint firstItem="viK-t5-gFs" firstAttribute="trailing" secondItem="0Ra-e8-YQn" secondAttribute="trailing" id="2us-zt-D2d"/>
                             <constraint firstItem="viK-t5-gFs" firstAttribute="bottom" secondItem="0Ra-e8-YQn" secondAttribute="bottom" constant="70" id="8g5-bq-TE8"/>
                             <constraint firstItem="viK-t5-gFs" firstAttribute="trailing" secondItem="6yO-1n-oSV" secondAttribute="trailing" constant="20" id="FmH-6W-Tnr"/>
                             <constraint firstItem="0Ra-e8-YQn" firstAttribute="leading" secondItem="viK-t5-gFs" secondAttribute="leading" id="PLd-ZD-8oJ"/>
                             <constraint firstItem="6yO-1n-oSV" firstAttribute="leading" secondItem="viK-t5-gFs" secondAttribute="leading" constant="20" id="ir6-rp-Fu8"/>
-                            <constraint firstItem="6yO-1n-oSV" firstAttribute="top" secondItem="viK-t5-gFs" secondAttribute="top" constant="40" id="umv-MP-XfY"/>
+                            <constraint firstItem="6yO-1n-oSV" firstAttribute="top" secondItem="viK-t5-gFs" secondAttribute="top" constant="64" id="umv-MP-XfY"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="viK-t5-gFs"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="5D5-Al-dYa" appends="YES" id="BWz-Z3-U2S"/>
                         </connections>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
                         <outlet property="TextLabel" destination="6yO-1n-oSV" id="NtF-Kk-opF"/>

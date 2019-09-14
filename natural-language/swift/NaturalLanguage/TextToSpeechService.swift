@@ -17,12 +17,29 @@
 import Foundation
 import googleapis
 import AVFoundation
+import AuthLibrary
+import Firebase
 
 class TextToSpeechRecognitionService {
   private var client : LanguageService = LanguageService(host: ApplicationConstants.Host)
   private var writer : GRXBufferedPipe = GRXBufferedPipe()
   private var call : GRPCProtoCall!
   static let sharedInstance = TextToSpeechRecognitionService()
+  var authToken: String = ""
+
+  func getDeviceID(callBack: @escaping (String)->Void) {
+    InstanceID.instanceID().instanceID { (result, error) in
+      if let error = error {
+        print("Error fetching remote instance ID: \(error)")
+        callBack( "")
+      } else if let result = result {
+        print("Remove instance ID token: \(result.token)")
+        callBack( result.token)
+      } else {
+        callBack( "")
+      }
+    }
+  }
 
   func textToSentiment(text:String, completionHandler: @escaping (_ response: AnalyzeSentimentResponse) -> Void) {
     let documet: Document = Document()
@@ -44,9 +61,9 @@ class TextToSpeechRecognitionService {
       print("analyzeSentimentResponse\(response)")
       completionHandler(response)
     }
-    call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
+    self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this
-    call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+    self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
     print("HEADERS:\(String(describing: call.requestHeaders))")
     call.start()
   }
@@ -71,9 +88,9 @@ class TextToSpeechRecognitionService {
       print("analyzeEntitiesResponse\(response)")
       completionHandler(response)
     }
-    call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
+    self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this
-    call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+    self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
     print("HEADERS:\(String(describing: call.requestHeaders))")
     call.start()
   }
@@ -97,38 +114,38 @@ class TextToSpeechRecognitionService {
       }
       print("analyzeSyntaxResponse\(response)")
     }
-    call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
+    self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this
-    call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+    self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
     print("HEADERS:\(String(describing: call.requestHeaders))")
     call.start()
   }
 
   func textToCategory(text:String, completionHandler: @escaping (_ response: AnalyzeSyntaxResponse) -> Void) {
-    //    let documet: Document = Document()
-    //    documet.content = text
-    //    documet.type = Document_Type.plainText
-    //
-    //    let classifyText = ClassifyTextRequest()
-    //    classifyText.document = documet
-    //
-    //    call = client.rpcToClassifyText(with: classifyText) { (classifyTextResponse, error) in
-    //      print("classifyTextResponse : \(String(describing: classifyTextResponse))")
-    //      if error != nil {
-    //        print(error?.localizedDescription ?? "No error description available")
-    //        return
-    //      }
-    //      guard let response = classifyTextResponse else {
-    //        print("No response received")
-    //        return
-    //      }
-    //      print("classifyTextResponse\(response)")
-    //    }
-    //    call.requestHeaders.setObject(NSString(string:ApplicationConstants.API_KEY), forKey:NSString(string:"X-Goog-Api-Key"))
-    //    // if the API key has a bundle ID restriction, specify the bundle ID like this
-    //    call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-    //    print("HEADERS:\(String(describing: call.requestHeaders))")
-    //    call.start()
+        let documet: Document = Document()
+        documet.content = text
+        documet.type = Document_Type.plainText
+
+        let classifyText = ClassifyTextRequest()
+        classifyText.document = documet
+
+        call = client.rpcToClassifyText(with: classifyText) { (classifyTextResponse, error) in
+          print("classifyTextResponse : \(String(describing: classifyTextResponse))")
+          if error != nil {
+            print(error?.localizedDescription ?? "No error description available")
+            return
+          }
+          guard let response = classifyTextResponse else {
+            print("No response received")
+            return
+          }
+          print("classifyTextResponse\(response)")
+        }
+        self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
+        // if the API key has a bundle ID restriction, specify the bundle ID like this
+        self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+        print("HEADERS:\(String(describing: call.requestHeaders))")
+        call.start()
   }
 }
 

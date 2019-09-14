@@ -215,6 +215,7 @@ extension ViewController {
   func textToSentimentAnalysis(text: String) {
     TextToSpeechRecognitionService.sharedInstance.textToSentiment(text: text, completionHandler:
       { (response) in
+        self.sentimentDataSource.removeAll()
         //Handle success response
         let sentence = Sentence()
         sentence.sentiment = response.documentSentiment
