@@ -56,4 +56,8 @@ extension ApplicationConstants {
   static let moreButtonTitle = "Menu"
   static let sentimentScore = "Sentiment Score:"
   static let sentimentMagnitude = "Sentiment magnitude:"
+  static let entityTableViewCell = "EntityTableViewCell"
+  static let sentimentTableViewCell = "SentimentTableViewCell"
+  static let syntaxCollectionViewCell = "SyntaxCollectionViewCell"
+  static let sentence = "Sentence: "
 }

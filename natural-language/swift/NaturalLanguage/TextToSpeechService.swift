@@ -113,6 +113,7 @@ class TextToSpeechRecognitionService {
         return
       }
       print("analyzeSyntaxResponse\(response)")
+      completionHandler(response)
     }
     self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this

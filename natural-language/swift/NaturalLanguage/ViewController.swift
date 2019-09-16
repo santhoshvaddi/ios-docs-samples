@@ -18,10 +18,18 @@ import UIKit
 import MaterialComponents
 import googleapis
 
+enum SyntaxOptions: Int {
+  case dependency = 10
+  case partOfSpeech, lemma, morphology
+}
+
 class ViewController: UIViewController {
   @IBOutlet weak var entityTableView: UITableView!
-
+  @IBOutlet weak var syntaxBackgroundView: UIView!
+  @IBOutlet weak var syntaxCollectionView: UICollectionView!
   @IBOutlet weak var TextLabel: UILabel!
+
+  var syntaxSelectedOptions: [SyntaxOptions] = [.dependency, .partOfSpeech, .lemma, .morphology]
   var appBar = MDCAppBar()
   // Text Field
   var inputTextField: MDCTextField = {
@@ -36,6 +44,7 @@ class ViewController: UIViewController {
 
   var entityDataSource = [Entity]()
   var sentimentDataSource = [Sentence]()
+  var syntaxDataSource = [Token]()
 
   //init with nib name
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -85,8 +94,44 @@ class ViewController: UIViewController {
     let colorScheme = ApplicationScheme.shared.colorScheme
     MDCTextFieldColorThemer.applySemanticColorScheme(colorScheme,
                                                      to: self.inputTextFieldController)
+    bringViewToFront()
   }
 
+  func bringViewToFront() {
+    TextLabel.text = ""
+    entityDataSource.removeAll()
+    sentimentDataSource.removeAll()
+    syntaxDataSource.removeAll()
+    syntaxCollectionView.reloadData()
+    entityTableView.reloadData()
+    let defaults = UserDefaults.standard
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems) {
+      switch selectedAnalysis {
+      case .entityAnalysis, .sentimentAnalysis:
+        entityTableView.isHidden = false
+        syntaxBackgroundView.isHidden = true
+        syntaxCollectionView.reloadData()
+      case .syntaxAnalysis:
+        entityTableView.isHidden = true
+        syntaxBackgroundView.isHidden = false
+        entityTableView.reloadData()
+      case .category:
+        break
+      }
+    }
+  }
+
+  @IBAction func syntaxOptionsSelected(_ sender: UIButton) {
+    let buttonTag = sender.tag
+    sender.isSelected = !sender.isSelected
+    guard let syntaxOption = SyntaxOptions(rawValue: buttonTag) else { return }
+    if syntaxSelectedOptions.contains(syntaxOption) {
+      syntaxSelectedOptions.removeAll(where: {$0 == syntaxOption})
+    } else {
+      syntaxSelectedOptions.append(syntaxOption)
+    }
+    syntaxCollectionView.reloadData()
+  }
   @IBAction func dismissKeyboardAction(_ sender:Any) {
     inputTextField.resignFirstResponder()
   }
@@ -98,6 +143,7 @@ class ViewController: UIViewController {
     } else {
       self.title = BetaFeatureMenu.entityAnalysis.stringValue()
     }
+    bringViewToFront()
   }
 
   func setUpNavigationBarAndItems() {
@@ -229,7 +275,7 @@ extension ViewController {
           self.sentimentDataSource.append(contentsOf: sentencesArray)
         }
         self.entityTableView.reloadData()
-        self.entityTableView.layer.borderColor =  #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
+        self.entityTableView.layer.borderColor = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)
         self.entityTableView.layer.borderWidth = 1.0
     })
   }
@@ -250,6 +296,11 @@ extension ViewController {
     TextToSpeechRecognitionService.sharedInstance.textToSyntax(text: text, completionHandler:
       { (response) in
         //Handle success response
+        guard let tokensArray = response.tokensArray as? [Token] else {return}
+        self.syntaxDataSource = tokensArray
+        self.syntaxCollectionView.reloadData()
+        self.syntaxCollectionView.layer.borderColor = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)
+        self.syntaxCollectionView.layer.borderWidth = 1.0
     })
   }
 
@@ -285,11 +336,11 @@ extension ViewController: UITableViewDataSource {
     if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems) {
       switch selectedAnalysis {
       case .entityAnalysis:
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "EntityTableViewCell", for: indexPath) as? EntityTableViewCell, entityDataSource.count > indexPath.row else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ApplicationConstants.entityTableViewCell, for: indexPath) as? EntityTableViewCell, entityDataSource.count > indexPath.row else { return UITableViewCell() }
         cell.configureWith(entity: entityDataSource[indexPath.row])
         return cell
       case .sentimentAnalysis:
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SentimentTableViewCell", for: indexPath) as? SentimentTableViewCell, sentimentDataSource.count > indexPath.row else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ApplicationConstants.sentimentTableViewCell, for: indexPath) as? SentimentTableViewCell, sentimentDataSource.count > indexPath.row else { return UITableViewCell() }
         cell.configureWith(sentence: sentimentDataSource[indexPath.row])
         return cell
       case .syntaxAnalysis:
@@ -304,4 +355,41 @@ extension ViewController: UITableViewDataSource {
 
 }
 
+extension ViewController: UICollectionViewDataSource {
 
+  func numberOfSections(in tableView: UITableView) -> Int {
+    return 1
+  }
+
+  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    let defaults = UserDefaults.standard
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems) {
+      switch selectedAnalysis {
+      case .entityAnalysis, .sentimentAnalysis:
+        break
+      case .syntaxAnalysis:
+        return syntaxDataSource.count
+      case .category:
+        break
+      }
+    }
+    return 0
+  }
+
+  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    let defaults = UserDefaults.standard
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems) {
+      switch selectedAnalysis {
+      case .entityAnalysis, .sentimentAnalysis:
+        break
+      case .syntaxAnalysis:
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ApplicationConstants.syntaxCollectionViewCell, for: indexPath) as? SyntaxCollectionViewCell, syntaxDataSource.count > indexPath.row else { return UICollectionViewCell() }
+        cell.configureWith(sentence: syntaxDataSource[indexPath.row], selectedOptions: syntaxSelectedOptions)
+        return cell
+      case .category:
+        break
+      }
+    }
+    return UICollectionViewCell()
+  }
+}
