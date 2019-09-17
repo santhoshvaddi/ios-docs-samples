@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Google Inc. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ import Foundation
 
 //MARK: Stopwatch service
 struct ApplicationConstants {
-  static let Host = "translate.googleapis.com"
+  static let Host = "translate.googleapis.com" 
   static let languageCode = "en-US"
-  static let projectID = "your-project-identifier"
-  static let SessionID = "001"
+  static let projectID = "dialogflowsamples-santhosh-2"
   static let locationID = "us-central1"
   static let glossaryID = " your-glossary-ID"
 }
