@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Google Inc. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,10 +26,6 @@ class TextToTranslationService {
   private var call : GRPCProtoCall!
   static let sharedInstance = TextToTranslationService()
   var authToken: String = ""
-
-  private var session : String {
-    return "projects/" + ApplicationConstants.projectID + "/agent/sessions/" + ApplicationConstants.SessionID
-  }
 
   func getDeviceID(callBack: @escaping (String)->Void) {
     InstanceID.instanceID().instanceID { (result, error) in
