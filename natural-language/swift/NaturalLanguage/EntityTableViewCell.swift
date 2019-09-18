@@ -33,7 +33,7 @@ extension Entity_Type {
     case .workOfArt:
       return "WORK OF ART"
     case .consumerGood:
-      return "COSUMER GOOD"
+      return "CONSUMER GOOD"
     case .other:
       return "OTHER"
     case .phoneNumber:
@@ -515,6 +515,14 @@ class EntityTableViewCell: UITableViewCell {
     entitySalienceLabel.text = "\(entity.salience)"
   }
 
+  func configureEntitySentiment(entity: Entity) {
+    entityNameLabel.text = entity.name
+    entityTypeLabel.text = entity.type.getEntityType()
+    entityURLLeftLabel.text = "Sentiment"
+    entityURLRightLabel.text = "Score: \(entity.sentiment.score) Magnitude: \(entity.sentiment.magnitude)"
+    entitySalienceLabel.text = ""
+  }
+
 }
 
 class SentimentTableViewCell: UITableViewCell {
@@ -559,7 +567,7 @@ class SyntaxCollectionViewCell: UICollectionViewCell {
       case .partOfSpeech:
         partOFSpeechLabel.text = sentence.hasPartOfSpeech ? sentence.partOfSpeech.tag.getPartOfSpeechTag().uppercased() : ""
       case .lemma:
-            lemmaLabel.text = sentence.lemma == sentence.text.content ? "" : sentence.lemma
+        lemmaLabel.text = sentence.lemma == sentence.text.content ? "" : sentence.lemma
       case .morphology:
         morphologyLabel.text = sentence.hasPartOfSpeech ? getMorphologyText(partOfSpeech: sentence.partOfSpeech) : ""
       }

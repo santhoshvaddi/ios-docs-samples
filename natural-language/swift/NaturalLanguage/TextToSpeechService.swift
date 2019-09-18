@@ -41,7 +41,7 @@ class TextToSpeechRecognitionService {
     }
   }
 
-  func textToSentiment(text:String, completionHandler: @escaping (_ response: AnalyzeSentimentResponse) -> Void) {
+  func textToSentiment(text:String, completionHandler: @escaping (_ documentResponse: AnalyzeSentimentResponse, _ entityResponse: AnalyzeEntitySentimentResponse) -> Void) {
     let documet: Document = Document()
     documet.content = text
     documet.type = Document_Type.plainText
@@ -59,8 +59,31 @@ class TextToSpeechRecognitionService {
         return
       }
       print("analyzeSentimentResponse\(response)")
-      completionHandler(response)
+      self.textToEntitySentimentAnalysis(document: documet, analyzeSentimentResponse: response, completionHandler: completionHandler)
     }
+    self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
+    // if the API key has a bundle ID restriction, specify the bundle ID like this
+    self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+    print("HEADERS:\(String(describing: call.requestHeaders))")
+    call.start()
+  }
+
+  func textToEntitySentimentAnalysis(document: Document, analyzeSentimentResponse: AnalyzeSentimentResponse, completionHandler: @escaping (_ documentResponse: AnalyzeSentimentResponse, _ entityResponse: AnalyzeEntitySentimentResponse) -> Void) {
+    let analyzeEntitySentiment = AnalyzeEntitySentimentRequest()
+    analyzeEntitySentiment.document = document
+
+    call = client.rpcToAnalyzeEntitySentiment(with: analyzeEntitySentiment, handler: { (analyzeEntitySentimentResponse, error) in
+      if error != nil {
+        print(error?.localizedDescription ?? "No error description available")
+        return
+      }
+      guard let response = analyzeEntitySentimentResponse else {
+        print("No response received")
+        return
+      }
+      print("analyzeSentimentResponse\(response)")
+      completionHandler(analyzeSentimentResponse, response)
+    })
     self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this
     self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
@@ -123,32 +146,33 @@ class TextToSpeechRecognitionService {
   }
 
   func textToCategory(text:String, completionHandler: @escaping (_ response: AnalyzeSyntaxResponse) -> Void) {
-        let documet: Document = Document()
-        documet.content = text
-        documet.type = Document_Type.plainText
+    let documet: Document = Document()
+    documet.content = text
+    documet.type = Document_Type.plainText
 
-        let classifyText = ClassifyTextRequest()
-        classifyText.document = documet
+    let classifyText = ClassifyTextRequest()
+    classifyText.document = documet
 
-        call = client.rpcToClassifyText(with: classifyText) { (classifyTextResponse, error) in
-          print("classifyTextResponse : \(String(describing: classifyTextResponse))")
-          if error != nil {
-            print(error?.localizedDescription ?? "No error description available")
-            return
-          }
-          guard let response = classifyTextResponse else {
-            print("No response received")
-            return
-          }
-          print("classifyTextResponse\(response)")
-        }
-        self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
-        // if the API key has a bundle ID restriction, specify the bundle ID like this
-        self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
-        print("HEADERS:\(String(describing: call.requestHeaders))")
-        call.start()
+    call = client.rpcToClassifyText(with: classifyText) { (classifyTextResponse, error) in
+      print("classifyTextResponse : \(String(describing: classifyTextResponse))")
+      if error != nil {
+        print(error?.localizedDescription ?? "No error description available")
+        return
+      }
+      guard let response = classifyTextResponse else {
+        print("No response received")
+        return
+      }
+      print("classifyTextResponse\(response)")
+    }
+    self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
+    // if the API key has a bundle ID restriction, specify the bundle ID like this
+    self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
+    print("HEADERS:\(String(describing: call.requestHeaders))")
+    call.start()
   }
 }
+
 
 
 

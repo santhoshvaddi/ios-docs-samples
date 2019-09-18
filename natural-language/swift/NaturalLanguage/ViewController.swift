@@ -45,6 +45,7 @@ class ViewController: UIViewController {
   var entityDataSource = [Entity]()
   var sentimentDataSource = [Sentence]()
   var syntaxDataSource = [Token]()
+  var entitySentimentDataSource = [Entity]()
 
   //init with nib name
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -63,7 +64,7 @@ class ViewController: UIViewController {
     super.viewDidLoad()
     self.view.tintColor = .black
     self.view.backgroundColor = ApplicationScheme.shared.colorScheme.surfaceColor
-
+entityTableView.register(UITableViewCell.self, forCellReuseIdentifier: "CellId")
     updateNavigationTitle()
     NotificationCenter.default.addObserver(self, selector: #selector(updateNavigationTitle), name: NSNotification.Name(rawValue: ApplicationConstants.menuItemChangedNotification), object: nil)
     setUpNavigationBarAndItems()
@@ -259,25 +260,24 @@ extension ViewController: UITextFieldDelegate {
 //MARK: API calls
 extension ViewController {
   func textToSentimentAnalysis(text: String) {
-    TextToSpeechRecognitionService.sharedInstance.textToSentiment(text: text, completionHandler:
-      { (response) in
-        self.sentimentDataSource.removeAll()
-        //Handle success response
-        let sentence = Sentence()
-        sentence.sentiment = response.documentSentiment
-        sentence.text.content = "Entire document's sentiment analysis"
-        self.sentimentDataSource.append(sentence)
+    TextToSpeechRecognitionService.sharedInstance.textToSentiment(text: text) { (analyzeSentimentResponse, analyzeEntitySentimentResponse) in
+      self.sentimentDataSource.removeAll()
+      //Handle success response
+      let sentence = Sentence()
+      sentence.sentiment = analyzeSentimentResponse.documentSentiment
+      sentence.text.content = "Entire document's sentiment analysis"
+      self.sentimentDataSource.append(sentence)
 
-        let sentence2 = Sentence()
-        sentence2.text.content = "Element wise Sentiment analysis"
-        self.sentimentDataSource.append(sentence2)
-        if let sentencesArray = response.sentencesArray as? [Sentence] {
-          self.sentimentDataSource.append(contentsOf: sentencesArray)
-        }
-        self.entityTableView.reloadData()
-        self.entityTableView.layer.borderColor = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)
-        self.entityTableView.layer.borderWidth = 1.0
-    })
+      if let sentencesArray = analyzeSentimentResponse.sentencesArray as? [Sentence] {
+        self.sentimentDataSource.append(contentsOf: sentencesArray)
+      }
+      if let entityArray = analyzeEntitySentimentResponse.entitiesArray as? [Entity] {
+        self.entitySentimentDataSource = entityArray
+      }
+      self.entityTableView.reloadData()
+      self.entityTableView.layer.borderColor = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)
+      self.entityTableView.layer.borderWidth = 1.0
+    }
   }
 
   func textToEntityAnalysis(text: String) {
@@ -313,7 +313,14 @@ extension ViewController {
 }
 
 //MARK:- UITableViewDataSource
-extension ViewController: UITableViewDataSource {
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
+  func numberOfSections(in tableView: UITableView) -> Int {
+    let defaults = UserDefaults.standard
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems), selectedAnalysis == .sentimentAnalysis {
+      return entitySentimentDataSource.count > 0 ? 2 : 1
+    }
+    return 1
+  }
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     let defaults = UserDefaults.standard
     if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems) {
@@ -321,7 +328,7 @@ extension ViewController: UITableViewDataSource {
       case .entityAnalysis:
         return entityDataSource.count
       case .sentimentAnalysis:
-        return sentimentDataSource.count
+        return section == 0 ? sentimentDataSource.count : entitySentimentDataSource.count
       case .syntaxAnalysis:
         break
       case .category:
@@ -340,9 +347,16 @@ extension ViewController: UITableViewDataSource {
         cell.configureWith(entity: entityDataSource[indexPath.row])
         return cell
       case .sentimentAnalysis:
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ApplicationConstants.sentimentTableViewCell, for: indexPath) as? SentimentTableViewCell, sentimentDataSource.count > indexPath.row else { return UITableViewCell() }
-        cell.configureWith(sentence: sentimentDataSource[indexPath.row])
-        return cell
+        if indexPath.section == 0 {
+          guard let cell = tableView.dequeueReusableCell(withIdentifier: ApplicationConstants.sentimentTableViewCell, for: indexPath) as? SentimentTableViewCell, sentimentDataSource.count > indexPath.row else { return UITableViewCell() }
+          cell.configureWith(sentence: sentimentDataSource[indexPath.row])
+          return cell
+        } else {
+          guard let cell = tableView.dequeueReusableCell(withIdentifier: ApplicationConstants.entityTableViewCell, for: indexPath) as? EntityTableViewCell, entitySentimentDataSource.count > indexPath.row else { return UITableViewCell() }
+          cell.configureEntitySentiment(entity: entitySentimentDataSource[indexPath.row])
+          return cell
+        }
+
       case .syntaxAnalysis:
         break
       case .category:
@@ -352,14 +366,36 @@ extension ViewController: UITableViewDataSource {
     return UITableViewCell()
 
   }
+  func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
+    let sectionHeader = tableView.dequeueReusableCell(withIdentifier: "CellId")
+
+    sectionHeader?.textLabel?.font = .boldSystemFont(ofSize: 16)
+    sectionHeader?.backgroundColor = .lightGray
+    sectionHeader?.textLabel?.textColor = .black
+    if section == 0, sentimentDataSource.count > 0 {
+      sectionHeader?.textLabel?.text = "Document and Sentence Level Sentiment"
+      return sectionHeader
+    } else if section == 1, entitySentimentDataSource.count > 0 {
+      sectionHeader?.textLabel?.text = "Entity Level Sentiment"
+      return sectionHeader
+    }
+    return nil
+  }
+
+  func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    if section == 0, sentimentDataSource.count > 0 {
+      return 44
+    } else if section == 1, entitySentimentDataSource.count > 0 {
+      return 44
+    }
+    return CGFloat.leastNonzeroMagnitude
+  }
 }
 
 extension ViewController: UICollectionViewDataSource {
 
-  func numberOfSections(in tableView: UITableView) -> Int {
-    return 1
-  }
+
 
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     let defaults = UserDefaults.standard
@@ -393,3 +429,13 @@ extension ViewController: UICollectionViewDataSource {
     return UICollectionViewCell()
   }
 }
+
+extension ViewController: UICollectionViewDelegateFlowLayout {
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    //        let availableWidth = UIScreen.main.bounds.width - 10*2 - 5*2
+
+    return UICollectionViewFlowLayout.automaticSize
+    //CGSize(width: availableWidth/3, height: )
+  }
+}
+
