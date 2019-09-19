@@ -1,61 +1,84 @@
-# Cloud Text to Speech gRPC Swift Sample
+# Cloud Natural Language gRPC Swift Sample
 
-This app demonstrates how to make gRPC connections to the [Cloud TextToSpeech API](https://cloud.google.com/text-to-speech/) to get the audio data of the text.
+This app demonstrates how to make gRPC connections to the [Cloud natural Language API](https://cloud.google.com/natural-language/) 
+
+The app demonstrates how to detect intents:
+- With Entity
+- With Sentiment Analysis
+- With Syntax
+- With Category
+
+To call the APIs from iOS, you need to provide authorization tokens with each request for authentication. To get this token, this sample uses a Firebase Function (in Node.js) to generate these tokens on the behalf of a service account.
 
 ## Prerequisites
-- An API key for the Cloud Text to Speech API (See
-  [the docs][getting-started] to learn more)
+
 - An OSX machine or emulator
-- [Xcode 8 beta 6][xcode] or later
-- [Cocoapods][cocoapods] version 1.0 or later
+- [Xcode 10][xcode] or higher
+- [Cocoapods][cocoapods] 
 
-## Quickstart
-- Clone this repo and `cd` into this directory.
-- Run `./INSTALL-COCOAPODS`
-- In `TextToSpeech/ApplicationConstants.swift`, replace `YOUR_API_KEY` with the API key obtained above.
-- Build and run the app.
+## Setup
+
+- Create a project (or use an existing one) in the [Google Cloud Console][cloud-console]
+- Enable the [Cloud Natural Language API](https://console.cloud.google.com/apis/library/language.googleapis.com)
+- Enable the [IAM Service Account Credentials API](https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com).
+- [Enable billing][billing]
+- [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM roles: `Owner`. Example name: `natural-language`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
 
 
-## Running the app
+###  Setup the app
+- Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
+- Go to `ios-docs-samples/translation/swift/google/`
+- Copy the below listed folder protos into the `google` folder
+1. api : create `api` folder inside of `ios-docs-samples/translation/swift/google/` folder and paste `annotations.proto`, `client.proto`, `field_behavior.proto`,  `http.proto`, `label.proto`, `monitored_resource.proto` from [api](https://github.com/googleapis/googleapis/tree/master/google/api)
+2. Cloud: get the `cloud/language/v1/language_service.proto` in your project's google folder. your project structure will look similar to `ios-docs-samples/natural-language/swift/google/cloud/language/v1/language_service.proto` [language_service.proto](https://github.com/googleapis/googleapis/blob/master/google/cloud/language/v1/language_service.proto)
+3. longrunning:  create `longrunning` folder inside of `ios-docs-samples/natural-language/swift/google/` folder and paste [operations.proto](https://github.com/googleapis/googleapis/blob/master/google/longrunning/operations.proto)
+4. rpc:  create `rpc` folder inside of `ios-docs-samples/natural-language/swift/google/` folder and paste `code.proto, error_details.proto, status.proto` from [rpc](https://github.com/googleapis/googleapis/tree/master/google/rpc)
 
-- As with all Google Cloud APIs, every call to the Text to Speech API must be associated
-  with a project within the [Google Cloud Console][cloud-console] that has the
-  Text to Speech API enabled. This is described in more detail in the [getting started
-  doc][getting-started], but in brief:
-  - Create a project (or use an existing one) in the [Cloud
-    Console][cloud-console]
-  - [Enable billing][billing] and the [TextToSpeech API][enable-text-to-speech].
-  - Create an [API key][api-key], and save this for later.
+- `cd ios-docs-samples/natural-language/swift/` 
+- Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `NaturalLanguage.xcworkspace` and not `NaturalLanguage.xcodeproj`.
+- In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `NaturalLanguage` directory.
+- Go to the project editor for your target and then click on the `Capabilities` tab. Look for `Push Notifications` and toggle its value to ON
 
-- Clone this repository on GitHub. If you have [`git`][git] installed, you can do this by executing the following command:
+###  Setup Firebase on the application:
 
-        $ git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git
+- Complete the steps for [Add Firebase to your app](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app) and expand the "Create a Firebase project" section for instructions on how to add project to your Firebase console. Note: No need to complete any other sections, they are already done. 
+- Complete the steps to [Configuring APNs with FCM](https://firebase.google.com/docs/cloud-messaging/ios/certs).
+- Use `iOS bundle ID` which has push notifications enabled and select your development team in 'General->Signing' before building the application in an iOS device.
+Note: as we were going to get the token in notifications, Please run the sample in iOS device instead of running it in the simulator. 
+- In the [Firebase console][Firebase], open the "Authentication" section under Develop.
+- On the **Sign-in Methods** page, enable the **Anonymous** sign-in method.
 
-    This will download the repository of samples into the directory
-    `ios-docs-samples`.
+###  Setup and Deploy the Firebase Function 
+The Firebase Function provides auth tokens to your app, You'll be using a provided sample function to be run with this app.
 
-- `cd` into this directory in the repository you just cloned, and run the command `./INSTALL-COCOAPODS` to prepare all Cocoapods-related dependencies.
+- Follow the steps in this [guide](https://firebase.google.com/docs/functions/get-started) for: 
+- "1. Set up Node.js and the Firebase CLI"
+- "2. Initialize Firebase SDK for Cloud Functions". 
+- Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/functions/tokenservice/functions/index.js).
+- Replace scope in line 79 with `scope: ['https://www.googleapis.com/auth/cloud-language'],`
+- Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`natural-language`) and project id. 
+- Deploy getOAuthToken method by running command:
+```
+firebase deploy -—only functions
+```
+- For your "App Engine Default Service Account" add the following IAM role: `Service Account Token Creator` . ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
 
-- `open TextToSpeech.xcworkspace` to open this project in Xcode. Since we are using Cocoapods, be sure to open the workspace and not Speech.xcodeproj.
+- For more info please refer (https://firebase.google.com/docs/functions/get-started).
 
-- In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `TextToSpeech` directory.
+## Run the app
 
-- Find the line where the `API_KEY` is set. Replace the string value with the API key obtained from the Cloud console above. This key is the credential used to authenticate all requests to the TextToSpeech API. Calls to the API are thus associated with the project you created above, for access and billing purposes.
+- You are now ready to build and run the project. In Xcode you can do this by clicking the 'Play' button in the top left. This will launch the app on the simulator or on the device you've selected. Be sure that the 'Translation' target is selected in the popup near the top left of the Xcode window. 
+- By tapping on the Menu button in top left corner of the application, where the user can select source and target languages from the picker view.
+- By tappng on Glossary button in top right corner of the application, where the user can enable or disable the glossary.
+- Tap the `Type your input` text field. This sends the text to the TextToTranslationService class, which sends it to the Translation Service. Once the response `TranslateTextResponse` comes, The viewcontroller extracts translated text  from it and displays it on the screen.
+- Right side will be the users query where as the left side will be translated response. 
+- The chosen options will be stored in the user defaults for subsequent visits, and the fields will be repopulated.
 
-- You are now ready to build and run the project. In Xcode you can do this by clicking the 'Play' button in the top left. This will launch the app on the simulator or on the device you've selected. Be sure that the 'TextToSpeech' target is selected in the popup near the top left of the Xcode window. 
 
-- Tap the `Type your input` text field. This sends the text to the TextToSpeechService class, which sends it to the TextToSpeech Service. Once the response `SynthesizeSpeechResponse` comes, then it extracts audio data from it and sends it to the controller.
-- Controller plays the audio from audioData.
-
-- Type a few words and wait for the audio to play when your text is recognized.
-
-[getting-started]: https://cloud.google.com/text-to-speech/docs/quickstarts
 [cloud-console]: https://console.cloud.google.com
 [git]: https://git-scm.com/
 [xcode]: https://developer.apple.com/xcode/
 [billing]: https://console.cloud.google.com/billing?project=_
-[enable-text-to-speech]: https://console.cloud.google.com/apis/library/texttospeech.googleapis.com
-[api-key]: https://console.cloud.google.com/apis/credentials?project=_
 [cocoapods]: https://cocoapods.org/
-[gRPC Objective-C setup]: https://github.com/grpc/grpc/tree/master/src/objective-c
+[Firebase]: https://console.firebase.google.com/
 

@@ -58,6 +58,6 @@ extension ApplicationConstants {
   static let sentimentMagnitude = "Sentiment magnitude:"
   static let entityTableViewCell = "EntityTableViewCell"
   static let sentimentTableViewCell = "SentimentTableViewCell"
-  static let syntaxCollectionViewCell = "SyntaxCollectionViewCell"
+  static let syntaxTableViewCell = "SyntaxTableViewCell"
   static let sentence = "Sentence: "
 }

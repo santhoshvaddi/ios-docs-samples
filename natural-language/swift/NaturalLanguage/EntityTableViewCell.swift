@@ -542,34 +542,30 @@ class SentimentTableViewCell: UITableViewCell {
   }
 }
 
-class SyntaxCollectionViewCell: UICollectionViewCell {
-  @IBOutlet weak var textLabel: UILabel!
-  @IBOutlet weak var partOFSpeechLabel: UILabel!
-  @IBOutlet weak var dependencyEdgeLabel: UILabel!
-  @IBOutlet weak var lemmaLabel: UILabel!
-  @IBOutlet weak var morphologyLabel: UILabel!
+class SyntaxTableViewCell: UITableViewCell {
+  @IBOutlet var textLabels: [UILabel]!
+  @IBOutlet var partOFSpeechLabels: [UILabel]!
+  @IBOutlet var dependencyEdgeLabels: [UILabel]!
+  @IBOutlet var lemmaLabels: [UILabel]!
+  @IBOutlet var morphologyLabels: [UILabel]!
 
-  override func awakeFromNib() {
-    super.awakeFromNib()
-    // Initialization code
-  }
 
-  func configureWith(sentence: Token, selectedOptions: [SyntaxOptions]) {
-    textLabel.text = sentence.hasText ?  sentence.text.content : ""
-    dependencyEdgeLabel.text = ""
-    partOFSpeechLabel.text = ""
-    lemmaLabel.text = ""
-    morphologyLabel.text = ""
+  func configureWith(index: Int, sentence: Token, selectedOptions: [SyntaxOptions]) {
+    textLabels[index].text = sentence.hasText ?  sentence.text.content : ""
+    dependencyEdgeLabels[index].text = ""
+    partOFSpeechLabels[index].text = ""
+    lemmaLabels[index].text = ""
+    morphologyLabels[index].text = ""
     for selectedOption in selectedOptions {
       switch selectedOption {
       case .dependency:
-        dependencyEdgeLabel.text = sentence.hasDependencyEdge ? sentence.dependencyEdge.label.getDependencyEdgeLabel().uppercased() : ""
+        dependencyEdgeLabels[index].text = sentence.hasDependencyEdge ? sentence.dependencyEdge.label.getDependencyEdgeLabel().uppercased() : ""
       case .partOfSpeech:
-        partOFSpeechLabel.text = sentence.hasPartOfSpeech ? sentence.partOfSpeech.tag.getPartOfSpeechTag().uppercased() : ""
+        partOFSpeechLabels[index].text = sentence.hasPartOfSpeech ? sentence.partOfSpeech.tag.getPartOfSpeechTag().uppercased() : ""
       case .lemma:
-        lemmaLabel.text = sentence.lemma == sentence.text.content ? "" : sentence.lemma
+        lemmaLabels[index].text = sentence.lemma == sentence.text.content ? "" : sentence.lemma
       case .morphology:
-        morphologyLabel.text = sentence.hasPartOfSpeech ? getMorphologyText(partOfSpeech: sentence.partOfSpeech) : ""
+        morphologyLabels[index].text = sentence.hasPartOfSpeech ? getMorphologyText(partOfSpeech: sentence.partOfSpeech) : ""
       }
     }
   }
@@ -599,4 +595,3 @@ class SyntaxCollectionViewCell: UICollectionViewCell {
     return morphologyText
   }
 }
-
