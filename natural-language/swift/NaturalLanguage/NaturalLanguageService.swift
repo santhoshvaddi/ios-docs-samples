@@ -20,11 +20,11 @@ import AVFoundation
 import AuthLibrary
 import Firebase
 
-class TextToSpeechRecognitionService {
+class NaturalLanguageService {
   private var client : LanguageService = LanguageService(host: ApplicationConstants.Host)
   private var writer : GRXBufferedPipe = GRXBufferedPipe()
   private var call : GRPCProtoCall!
-  static let sharedInstance = TextToSpeechRecognitionService()
+  static let sharedInstance = NaturalLanguageService()
   var authToken: String = ""
 
   func getDeviceID(callBack: @escaping (String)->Void) {
@@ -145,7 +145,7 @@ class TextToSpeechRecognitionService {
     call.start()
   }
 
-  func textToCategory(text:String, completionHandler: @escaping (_ response: AnalyzeSyntaxResponse) -> Void) {
+  func textToCategory(text:String, completionHandler: @escaping (_ response: ClassifyTextResponse) -> Void) {
     let documet: Document = Document()
     documet.content = text
     documet.type = Document_Type.plainText
@@ -164,6 +164,7 @@ class TextToSpeechRecognitionService {
         return
       }
       print("classifyTextResponse\(response)")
+      completionHandler(response)
     }
     self.call.requestHeaders.setObject(NSString(string:authToken), forKey:NSString(string:"Authorization"))
     // if the API key has a bundle ID restriction, specify the bundle ID like this

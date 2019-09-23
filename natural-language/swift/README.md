@@ -2,13 +2,13 @@
 
 This app demonstrates how to make gRPC connections to the [Cloud natural Language API](https://cloud.google.com/natural-language/) 
 
-The app demonstrates how to detect intents:
-- With Entity
-- With Sentiment Analysis
-- With Syntax
-- With Category
+The app demonstrates how to Analyze below for the user entered text:
+- Entity
+- Sentiment Analysis
+- Syntax
+- Category
 
-To call the APIs from iOS, you need to provide authorization tokens with each request for authentication. To get this token, this sample uses a Firebase Function (in Node.js) to generate these tokens on the behalf of a service account.
+To call the APIs from iOS, you need to provide authorization tokens with each request for authentication. To get this token, this sample uses AuthLibrary to generate these tokens on behalf of service account.
 
 ## Prerequisites
 
@@ -22,21 +22,20 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 - Enable the [Cloud Natural Language API](https://console.cloud.google.com/apis/library/language.googleapis.com)
 - Enable the [IAM Service Account Credentials API](https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com).
 - [Enable billing][billing]
-- [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM roles: `Owner`. Example name: `natural-language`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
+- [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: `Owner`. Example name: `natural-language`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
 
 
 ###  Setup the app
 - Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
-- Go to `ios-docs-samples/translation/swift/google/`
+- Go to `ios-docs-samples/natuaral-language/swift/google/`
 - Copy the below listed folder protos into the `google` folder
-1. api : create `api` folder inside of `ios-docs-samples/translation/swift/google/` folder and paste `annotations.proto`, `client.proto`, `field_behavior.proto`,  `http.proto`, `label.proto`, `monitored_resource.proto` from [api](https://github.com/googleapis/googleapis/tree/master/google/api)
+1. api : create `api` folder inside of `ios-docs-samples/natuaral-language/swift/google/` folder and paste `annotations.proto`, `client.proto`, `field_behavior.proto`,  `http.proto`, `label.proto`, `monitored_resource.proto` from [api](https://github.com/googleapis/googleapis/tree/master/google/api)
 2. Cloud: get the `cloud/language/v1/language_service.proto` in your project's google folder. your project structure will look similar to `ios-docs-samples/natural-language/swift/google/cloud/language/v1/language_service.proto` [language_service.proto](https://github.com/googleapis/googleapis/blob/master/google/cloud/language/v1/language_service.proto)
 3. longrunning:  create `longrunning` folder inside of `ios-docs-samples/natural-language/swift/google/` folder and paste [operations.proto](https://github.com/googleapis/googleapis/blob/master/google/longrunning/operations.proto)
 4. rpc:  create `rpc` folder inside of `ios-docs-samples/natural-language/swift/google/` folder and paste `code.proto, error_details.proto, status.proto` from [rpc](https://github.com/googleapis/googleapis/tree/master/google/rpc)
 
 - `cd ios-docs-samples/natural-language/swift/` 
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `NaturalLanguage.xcworkspace` and not `NaturalLanguage.xcodeproj`.
-- In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `NaturalLanguage` directory.
 - Go to the project editor for your target and then click on the `Capabilities` tab. Look for `Push Notifications` and toggle its value to ON
 
 ###  Setup Firebase on the application:
@@ -67,12 +66,16 @@ firebase deploy -—only functions
 
 ## Run the app
 
-- You are now ready to build and run the project. In Xcode you can do this by clicking the 'Play' button in the top left. This will launch the app on the simulator or on the device you've selected. Be sure that the 'Translation' target is selected in the popup near the top left of the Xcode window. 
-- By tapping on the Menu button in top left corner of the application, where the user can select source and target languages from the picker view.
-- By tappng on Glossary button in top right corner of the application, where the user can enable or disable the glossary.
-- Tap the `Type your input` text field. This sends the text to the TextToTranslationService class, which sends it to the Translation Service. Once the response `TranslateTextResponse` comes, The viewcontroller extracts translated text  from it and displays it on the screen.
-- Right side will be the users query where as the left side will be translated response. 
-- The chosen options will be stored in the user defaults for subsequent visits, and the fields will be repopulated.
+- You are now ready to build and run the project. In Xcode you can do this by clicking the 'Play' button in the top left. This will launch the app on the simulator or on the device you've selected. Be sure that the 'NaturalLanguage' target is selected in the popup near the top left of the Xcode window. 
+- By tapping on the Menu button in top left corner of the application, user can select options from the picker view.
+- Tap on `Type your input` text field and enter the text you want to analyze. Tapping on `enter` sends the text to the `NaturalLanguageService` class.
+- Based on your selection (`Entity`, `Sentiment`, `Syntax`, `Category`) respective service will be called. 
+- The viewcontroller extracts the results and displays on the screen using below responses.
+      `AnalyzeEntitiesResponse`
+      `AnalyzeSentimentResponse`
+      `AnalyzeSyntaxResponse`
+      `ClassifyTextResponse`
+- The chosen options will be stored in the user defaults for subsequent visits, and the fields will be prepopulated.
 
 
 [cloud-console]: https://console.cloud.google.com

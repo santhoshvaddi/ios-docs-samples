@@ -53,11 +53,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func fetchToken() {
-    TextToSpeechRecognitionService.sharedInstance.getDeviceID { (deviceID) in
+    NaturalLanguageService.sharedInstance.getDeviceID { (deviceID) in
       // authenticate using an authorization token (obtained using OAuth)
       FCMTokenProvider.getToken(deviceID: deviceID) { (shouldWait, token, error) in
         print("shouldWait: \(shouldWait), token: \(String(describing: token)), error: \(error?.localizedDescription ?? "")")
-        TextToSpeechRecognitionService.sharedInstance.authToken = token ?? ""
+        NaturalLanguageService.sharedInstance.authToken = token ?? ""
       }
     }
   }

@@ -19,14 +19,16 @@ import MaterialComponents
 import googleapis
 
 enum SyntaxOptions: Int {
-  case dependency = 10
-  case partOfSpeech, lemma, morphology
+  case dependency = 10, partOfSpeech, lemma, morphology
+  //case partOfSpeech, lemma, morphology
 }
 
 class ViewController: UIViewController {
   @IBOutlet weak var entityTableView: UITableView!
   @IBOutlet weak var syntaxBackgroundView: UIStackView!
   @IBOutlet weak var TextLabel: UILabel!
+  @IBOutlet weak var syntaxOptionsHeightConstraint: NSLayoutConstraint!
+
 
   var syntaxSelectedOptions: [SyntaxOptions] = [.dependency, .partOfSpeech, .lemma, .morphology]
   var appBar = MDCAppBar()
@@ -45,7 +47,8 @@ class ViewController: UIViewController {
   var sentimentDataSource = [Sentence]()
   var syntaxDataSource = [Token]()
   var entitySentimentDataSource = [Entity]()
-
+  var categoryDataSource = [ClassificationCategory]()
+  
   //init with nib name
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     inputTextFieldController = MDCTextInputControllerOutlined(textInput: inputTextField)
@@ -100,23 +103,21 @@ class ViewController: UIViewController {
   func bringViewToFront() {
     TextLabel.text = ""
     entityDataSource.removeAll()
+    entitySentimentDataSource.removeAll()
     sentimentDataSource.removeAll()
     syntaxDataSource.removeAll()
     entityTableView.reloadData()
     let defaults = UserDefaults.standard
     if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? Int, let selectedAnalysis = BetaFeatureMenu(rawValue: defaultItems) {
       switch selectedAnalysis {
-      case .entityAnalysis, .sentimentAnalysis:
-        entityTableView.isHidden = false
+      case .entityAnalysis, .sentimentAnalysis, .category:
         syntaxBackgroundView.isHidden = true
-        entityTableView.reloadData()
+        syntaxOptionsHeightConstraint.constant = 0
       case .syntaxAnalysis:
-        //entityTableView.isHidden = true
         syntaxBackgroundView.isHidden = false
-        entityTableView.reloadData()
-      case .category:
-        break
+        syntaxOptionsHeightConstraint.constant = 70
       }
+      entityTableView.reloadData()
     }
   }
 
@@ -258,7 +259,7 @@ extension ViewController: UITextFieldDelegate {
 //MARK: API calls
 extension ViewController {
   func textToSentimentAnalysis(text: String) {
-    TextToSpeechRecognitionService.sharedInstance.textToSentiment(text: text) { (analyzeSentimentResponse, analyzeEntitySentimentResponse) in
+    NaturalLanguageService.sharedInstance.textToSentiment(text: text) { (analyzeSentimentResponse, analyzeEntitySentimentResponse) in
       self.sentimentDataSource.removeAll()
       //Handle success response
       let sentence = Sentence()
@@ -279,7 +280,7 @@ extension ViewController {
   }
 
   func textToEntityAnalysis(text: String) {
-    TextToSpeechRecognitionService.sharedInstance.textToEntity(text: text, completionHandler:
+    NaturalLanguageService.sharedInstance.textToEntity(text: text, completionHandler:
       { (response) in
         //Handle success response
         guard let entityArray = response.entitiesArray as? [Entity] else {return}
@@ -291,7 +292,7 @@ extension ViewController {
   }
 
   func textToSyntaxAnalysis(text: String) {
-    TextToSpeechRecognitionService.sharedInstance.textToSyntax(text: text, completionHandler:
+    NaturalLanguageService.sharedInstance.textToSyntax(text: text, completionHandler:
       { (response) in
         //Handle success response
         guard let tokensArray = response.tokensArray as? [Token] else {return}
@@ -303,9 +304,14 @@ extension ViewController {
   }
 
   func textToClassifyCategory(text: String) {
-    TextToSpeechRecognitionService.sharedInstance.textToCategory(text: text, completionHandler:
+    NaturalLanguageService.sharedInstance.textToCategory(text: text, completionHandler:
       { (response) in
         //Handle success response
+        guard let categoriesArray = response.categoriesArray as? [ClassificationCategory] else {return}
+        self.categoryDataSource = categoriesArray
+        self.entityTableView.reloadData()
+        self.entityTableView.layer.borderColor = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)
+        self.entityTableView.layer.borderWidth = 1.0
     })
   }
 }
@@ -330,7 +336,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
       case .syntaxAnalysis:
         return (syntaxDataSource.count / 2) + (syntaxDataSource.count % 2)
       case .category:
-        break
+        return categoryDataSource.count
       }
     }
     return 0
@@ -357,18 +363,21 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
       case .syntaxAnalysis:
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ApplicationConstants.syntaxTableViewCell, for: indexPath) as? SyntaxTableViewCell else { return UITableViewCell() }
-        if syntaxDataSource.count > indexPath.row {
-          let token0 = syntaxDataSource[indexPath.row]
-          cell.configureWith(index: 0, sentence: token0, selectedOptions: syntaxSelectedOptions)
+        var token = [Token]()
+        if syntaxDataSource.count > (indexPath.row * 2) {
+          let token0 = syntaxDataSource[indexPath.row * 2]
+          token.append(token0)
         }
-        if syntaxSelectedOptions.count > indexPath.row + 1 {
-          let token1 = syntaxDataSource[indexPath.row + 1]
-          cell.configureWith(index: 1, sentence: token1, selectedOptions: syntaxSelectedOptions)
+        if syntaxDataSource.count > (indexPath.row * 2 + 1) {
+          let token1 = syntaxDataSource[indexPath.row * 2 + 1]
+          token.append(token1)
         }
-
+        cell.configureWith(sentences: token, selectedOptions: syntaxSelectedOptions)
         return cell
       case .category:
-        break
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ApplicationConstants.sentimentTableViewCell, for: indexPath) as? SentimentTableViewCell, categoryDataSource.count > indexPath.row else { return UITableViewCell() }
+        cell.configureWith(category: categoryDataSource[indexPath.row])
+        return cell
       }
     }
     return UITableViewCell()

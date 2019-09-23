@@ -494,7 +494,7 @@ class EntityTableViewCell: UITableViewCell {
   @IBOutlet weak var entityURLLeftLabel: UILabel!
   @IBOutlet weak var entityURLRightLabel: UILabel!
   @IBOutlet weak var entitySalienceLabel: UILabel!
-
+  @IBOutlet weak var entiySalienceLeftLabel: UILabel!
   override func awakeFromNib() {
     super.awakeFromNib()
     // Initialization code
@@ -512,7 +512,9 @@ class EntityTableViewCell: UITableViewCell {
     if let metaData = entity.metadata as? Dictionary<String, Any>, let wikiURL = metaData["wikipedia_url"] as? String {
       entityURLRightLabel.text = wikiURL
     }
+    entityURLLeftLabel.text = "URL: "
     entitySalienceLabel.text = "\(entity.salience)"
+    entiySalienceLeftLabel.text = "Salience: "
   }
 
   func configureEntitySentiment(entity: Entity) {
@@ -521,6 +523,7 @@ class EntityTableViewCell: UITableViewCell {
     entityURLLeftLabel.text = "Sentiment"
     entityURLRightLabel.text = "Score: \(entity.sentiment.score) Magnitude: \(entity.sentiment.magnitude)"
     entitySalienceLabel.text = ""
+    entiySalienceLeftLabel.text = ""
   }
 
 }
@@ -540,6 +543,13 @@ class SentimentTableViewCell: UITableViewCell {
     scoreLabel.text = sentence.hasSentiment ? "Score: \(sentence.sentiment.score)" : ""
     magnitudeLabel.text = sentence.hasSentiment ? "Magnitude: \(sentence.sentiment.magnitude)" : ""
   }
+  
+  func configureWith(category: ClassificationCategory) {
+    sentenceLabel.text = "Name: " + (category.name ?? "")
+    sentenceLabel.font = .boldSystemFont(ofSize: 14)
+    scoreLabel.text = "Confidence: " + "\(category.confidence)"
+    magnitudeLabel.text = ""
+  }
 }
 
 class SyntaxTableViewCell: UITableViewCell {
@@ -549,26 +559,43 @@ class SyntaxTableViewCell: UITableViewCell {
   @IBOutlet var lemmaLabels: [UILabel]!
   @IBOutlet var morphologyLabels: [UILabel]!
 
+  override func awakeFromNib() {
+    super.awakeFromNib()
+    // Initialization code
+    for i in 0 ..< textLabels.count {
+      textLabels[i].text = ""
+      dependencyEdgeLabels[i].text = ""
+      partOFSpeechLabels[i].text = ""
+      lemmaLabels[i].text = ""
+      morphologyLabels[i].text = ""
+    }
+  }
 
-  func configureWith(index: Int, sentence: Token, selectedOptions: [SyntaxOptions]) {
-    textLabels[index].text = sentence.hasText ?  sentence.text.content : ""
-    dependencyEdgeLabels[index].text = ""
-    partOFSpeechLabels[index].text = ""
-    lemmaLabels[index].text = ""
-    morphologyLabels[index].text = ""
-    for selectedOption in selectedOptions {
-      switch selectedOption {
-      case .dependency:
-        dependencyEdgeLabels[index].text = sentence.hasDependencyEdge ? sentence.dependencyEdge.label.getDependencyEdgeLabel().uppercased() : ""
-      case .partOfSpeech:
-        partOFSpeechLabels[index].text = sentence.hasPartOfSpeech ? sentence.partOfSpeech.tag.getPartOfSpeechTag().uppercased() : ""
-      case .lemma:
-        lemmaLabels[index].text = sentence.lemma == sentence.text.content ? "" : sentence.lemma
-      case .morphology:
-        morphologyLabels[index].text = sentence.hasPartOfSpeech ? getMorphologyText(partOfSpeech: sentence.partOfSpeech) : ""
+  func configureWith(sentences: [Token], selectedOptions: [SyntaxOptions]) {
+    for i in 0 ..< textLabels.count {
+      textLabels[i].text = ""
+      dependencyEdgeLabels[i].text = ""
+      partOFSpeechLabels[i].text = ""
+      lemmaLabels[i].text = ""
+      morphologyLabels[i].text = ""
+    }
+    for (index, sentence) in sentences.enumerated() {
+      textLabels[index].text = sentence.hasText ?  sentence.text.content : ""
+      for selectedOption in selectedOptions {
+        switch selectedOption {
+        case .dependency:
+          dependencyEdgeLabels[index].text = sentence.hasDependencyEdge ? sentence.dependencyEdge.label.getDependencyEdgeLabel().uppercased() : ""
+        case .partOfSpeech:
+          partOFSpeechLabels[index].text = sentence.hasPartOfSpeech ? sentence.partOfSpeech.tag.getPartOfSpeechTag().uppercased() : ""
+        case .lemma:
+          lemmaLabels[index].text = sentence.lemma == sentence.text.content ? "" : sentence.lemma
+        case .morphology:
+          morphologyLabels[index].text = sentence.hasPartOfSpeech ? getMorphologyText(partOfSpeech: sentence.partOfSpeech) : ""
+        }
       }
     }
   }
+
   func getMorphologyText(partOfSpeech: PartOfSpeech) -> String {
     var morphologyText = ""
     if partOfSpeech.number.hasNumber() {

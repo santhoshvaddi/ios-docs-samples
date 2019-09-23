@@ -32,11 +32,11 @@
                                         <subviews>
                                             <button opaque="NO" tag="10" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0SH-yh-idp">
                                                 <rect key="frame" x="0.0" y="0.0" width="187.5" height="32.5"/>
-                                                <color key="tintColor" red="0.1266518831" green="0.59394818540000005" blue="0.088146068159999993" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="tintColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <inset key="titleEdgeInsets" minX="0.0" minY="0.0" maxX="10" maxY="0.0"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="10" maxY="0.0"/>
                                                 <state key="normal" title="Parse label" image="login_unchecked">
-                                                    <color key="titleColor" red="0.1266518831" green="0.59394818540000005" blue="0.088146068159999993" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="titleColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                                 <state key="selected" image="login_checked"/>
                                                 <connections>
@@ -112,13 +112,13 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="355" height="20.5"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Name:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sNE-Ak-22h">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="50" height="20.5"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                    <nil key="textColor"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="53.5" height="20.5"/>
+                                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                                    <color key="textColor" red="1" green="0.38765872959411662" blue="0.24725101230256719" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gti-bO-Goa">
-                                                                    <rect key="frame" x="60" y="0.0" width="295" height="20.5"/>
+                                                                    <rect key="frame" x="63.5" y="0.0" width="291.5" height="20.5"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                     <nil key="textColor"/>
                                                                     <nil key="highlightedColor"/>
@@ -129,13 +129,13 @@
                                                             <rect key="frame" x="0.0" y="40" width="355" height="20.5"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Type:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dPg-7X-Pb7">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="42.5" height="20.5"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                    <nil key="textColor"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="46.5" height="20.5"/>
+                                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                                    <color key="textColor" red="0.30941712859999998" green="0.52416509389999999" blue="0.95691150430000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Krc-ho-6Ua">
-                                                                    <rect key="frame" x="52.5" y="0.0" width="302.5" height="20.5"/>
+                                                                    <rect key="frame" x="56.5" y="0.0" width="298.5" height="20.5"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                     <nil key="textColor"/>
                                                                     <nil key="highlightedColor"/>
@@ -147,8 +147,8 @@
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="URL:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DOr-67-coC">
                                                                     <rect key="frame" x="0.0" y="0.0" width="0.0" height="20.5"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                    <nil key="textColor"/>
+                                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                                    <color key="textColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="NA" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fdV-S4-Ohd">
@@ -163,13 +163,13 @@
                                                             <rect key="frame" x="0.0" y="119.5" width="355" height="20.5"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Salience:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SrD-3y-a3L">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="69.5" height="20.5"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                    <nil key="textColor"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="75" height="20.5"/>
+                                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                                    <color key="textColor" red="0.57919406890000003" green="0.1280144453" blue="0.57268613580000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cIJ-OH-4L9">
-                                                                    <rect key="frame" x="79.5" y="0.0" width="275.5" height="20.5"/>
+                                                                    <rect key="frame" x="85" y="0.0" width="270" height="20.5"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                     <nil key="textColor"/>
                                                                     <nil key="highlightedColor"/>
@@ -205,6 +205,7 @@
                                             <outlet property="entityTypeLabel" destination="Krc-ho-6Ua" id="MgQ-lC-lSa"/>
                                             <outlet property="entityURLLeftLabel" destination="DOr-67-coC" id="P2x-kT-QiB"/>
                                             <outlet property="entityURLRightLabel" destination="fdV-S4-Ohd" id="lFT-Rh-P51"/>
+                                            <outlet property="entiySalienceLeftLabel" destination="SrD-3y-a3L" id="Dzu-kG-9zS"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SentimentTableViewCell" id="yoc-t3-Ucs" customClass="SentimentTableViewCell" customModule="NaturalLanguage" customModuleProvider="target">
@@ -225,14 +226,14 @@
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gEw-eY-sLJ">
                                                             <rect key="frame" x="0.0" y="10" width="355" height="4"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <color key="textColor" red="0.0090147862209999999" green="0.99145334959999998" blue="0.46040409799999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                            <color key="textColor" red="0.26903019350000001" green="0.58159912930000002" blue="0.312442581" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jhI-ld-aUt">
                                                             <rect key="frame" x="0.0" y="24" width="355" height="0.0"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <color key="textColor" red="0.98988372089999999" green="0.51978057619999996" blue="0.010512237440000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                            <color key="textColor" red="0.40343415869999999" green="0.66372589429999995" blue="0.92854040859999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
@@ -286,7 +287,7 @@
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2EL-Hq-npT">
                                                                             <rect key="frame" x="0.0" y="0.0" width="182.5" height="0.0"/>
                                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                            <color key="textColor" red="0.1266518831" green="0.59394818540000005" blue="0.088146068159999993" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                            <color key="textColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JvK-nH-dY6">
@@ -334,7 +335,7 @@
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tnQ-Yi-W3e">
                                                                             <rect key="frame" x="0.0" y="0.0" width="182.5" height="0.0"/>
                                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                            <color key="textColor" red="0.1266518831" green="0.59394818540000005" blue="0.088146068159999993" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                            <color key="textColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHG-Uv-xL0">
@@ -384,16 +385,16 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outletCollection property="lemmaLabels" destination="7jR-ci-bta" collectionClass="NSMutableArray" id="ucc-qc-2Mv"/>
-                                            <outletCollection property="dependencyEdgeLabels" destination="Le6-1x-aMI" collectionClass="NSMutableArray" id="8zf-Jj-tRm"/>
-                                            <outletCollection property="morphologyLabels" destination="XaG-sV-Uez" collectionClass="NSMutableArray" id="Of0-aN-CFV"/>
-                                            <outletCollection property="partOFSpeechLabels" destination="JvK-nH-dY6" collectionClass="NSMutableArray" id="9Iq-tn-uYc"/>
-                                            <outletCollection property="textLabels" destination="2EL-Hq-npT" collectionClass="NSMutableArray" id="aCd-C8-baR"/>
-                                            <outletCollection property="dependencyEdgeLabels" destination="0VS-vD-6Qx" collectionClass="NSMutableArray" id="h8q-yr-wFM"/>
-                                            <outletCollection property="lemmaLabels" destination="6N7-DF-Xb4" collectionClass="NSMutableArray" id="wli-iM-Sw7"/>
-                                            <outletCollection property="textLabels" destination="tnQ-Yi-W3e" collectionClass="NSMutableArray" id="CyS-9R-5TW"/>
-                                            <outletCollection property="morphologyLabels" destination="bQB-tW-yjn" collectionClass="NSMutableArray" id="hBm-y5-NVy"/>
-                                            <outletCollection property="partOFSpeechLabels" destination="WHG-Uv-xL0" collectionClass="NSMutableArray" id="9wg-Sa-y1n"/>
+                                            <outletCollection property="dependencyEdgeLabels" destination="2EL-Hq-npT" collectionClass="NSMutableArray" id="Dud-1o-8u6"/>
+                                            <outletCollection property="dependencyEdgeLabels" destination="tnQ-Yi-W3e" collectionClass="NSMutableArray" id="u95-ic-HkO"/>
+                                            <outletCollection property="textLabels" destination="JvK-nH-dY6" collectionClass="NSMutableArray" id="bUU-Zz-Ve8"/>
+                                            <outletCollection property="textLabels" destination="WHG-Uv-xL0" collectionClass="NSMutableArray" id="ITo-yF-CqU"/>
+                                            <outletCollection property="lemmaLabels" destination="Le6-1x-aMI" collectionClass="NSMutableArray" id="630-DK-DLK"/>
+                                            <outletCollection property="lemmaLabels" destination="0VS-vD-6Qx" collectionClass="NSMutableArray" id="hST-Pu-e8U"/>
+                                            <outletCollection property="partOFSpeechLabels" destination="7jR-ci-bta" collectionClass="NSMutableArray" id="wu3-UA-Nq4"/>
+                                            <outletCollection property="partOFSpeechLabels" destination="6N7-DF-Xb4" collectionClass="NSMutableArray" id="doI-sE-xr5"/>
+                                            <outletCollection property="morphologyLabels" destination="XaG-sV-Uez" collectionClass="NSMutableArray" id="Yyi-AT-9vS"/>
+                                            <outletCollection property="morphologyLabels" destination="bQB-tW-yjn" collectionClass="NSMutableArray" id="OKg-zV-CnI"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -428,6 +429,7 @@
                         <outlet property="TextLabel" destination="ke1-Cw-Whd" id="pQw-hU-MNt"/>
                         <outlet property="entityTableView" destination="ALq-yn-mDf" id="OyE-Hk-d8b"/>
                         <outlet property="syntaxBackgroundView" destination="Xrn-S4-qUK" id="V1f-aM-VwM"/>
+                        <outlet property="syntaxOptionsHeightConstraint" destination="bXL-Eu-5Qd" id="umR-Y5-DLi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="46e-nn-GHj" sceneMemberID="firstResponder"/>

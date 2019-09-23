@@ -11,7 +11,7 @@
 		67A16E36231A06EE0002EB56 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A16E35231A06EE0002EB56 /* ViewController.swift */; };
 		67A16E3B231A06EF0002EB56 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67A16E3A231A06EF0002EB56 /* Assets.xcassets */; };
 		67A16E54231A08600002EB56 /* BottomDrawerViewControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A16E45231A085F0002EB56 /* BottomDrawerViewControllers.swift */; };
-		67A16E55231A08600002EB56 /* TextToSpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A16E46231A085F0002EB56 /* TextToSpeechService.swift */; };
+		67A16E55231A08600002EB56 /* NaturalLanguageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A16E46231A085F0002EB56 /* NaturalLanguageService.swift */; };
 		67A16E56231A08600002EB56 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67A16E47231A085F0002EB56 /* Assets.xcassets */; };
 		67A16E57231A08600002EB56 /* ApplicationConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A16E48231A08600002EB56 /* ApplicationConstants.swift */; };
 		67A16E58231A08600002EB56 /* ApplicationScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A16E49231A08600002EB56 /* ApplicationScheme.swift */; };
@@ -32,7 +32,7 @@
 		67A16E3A231A06EF0002EB56 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		67A16E3F231A06EF0002EB56 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		67A16E45231A085F0002EB56 /* BottomDrawerViewControllers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomDrawerViewControllers.swift; sourceTree = "<group>"; };
-		67A16E46231A085F0002EB56 /* TextToSpeechService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextToSpeechService.swift; sourceTree = "<group>"; };
+		67A16E46231A085F0002EB56 /* NaturalLanguageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NaturalLanguageService.swift; sourceTree = "<group>"; };
 		67A16E47231A085F0002EB56 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		67A16E48231A08600002EB56 /* ApplicationConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationConstants.swift; sourceTree = "<group>"; };
 		67A16E49231A08600002EB56 /* ApplicationScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationScheme.swift; sourceTree = "<group>"; };
@@ -97,7 +97,7 @@
 				67A16E45231A085F0002EB56 /* BottomDrawerViewControllers.swift */,
 				67A16E4A231A08600002EB56 /* Fonts */,
 				67A16E53231A08600002EB56 /* Stopwatch-Bridging-Header.h */,
-				67A16E46231A085F0002EB56 /* TextToSpeechService.swift */,
+				67A16E46231A085F0002EB56 /* NaturalLanguageService.swift */,
 				67A16E33231A06EE0002EB56 /* AppDelegate.swift */,
 				67A16E35231A06EE0002EB56 /* ViewController.swift */,
 				67A16E3A231A06EF0002EB56 /* Assets.xcassets */,
@@ -279,7 +279,7 @@
 				67A16E58231A08600002EB56 /* ApplicationScheme.swift in Sources */,
 				67E142F3232B061500E1C74B /* EntityTableViewCell.swift in Sources */,
 				67A16E54231A08600002EB56 /* BottomDrawerViewControllers.swift in Sources */,
-				67A16E55231A08600002EB56 /* TextToSpeechService.swift in Sources */,
+				67A16E55231A08600002EB56 /* NaturalLanguageService.swift in Sources */,
 				67A16E36231A06EE0002EB56 /* ViewController.swift in Sources */,
 				67A16E34231A06EE0002EB56 /* AppDelegate.swift in Sources */,
 			);
