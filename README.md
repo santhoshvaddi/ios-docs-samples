@@ -41,6 +41,6 @@ Samples that demonstrate the [Cloud Text to Speech API](https://cloud.google.com
 
 Samples that demonstrate the [Cloud Translation](https://cloud.google.com/translate/)
 
-### [Natural Language](natural-language)
+### [natural-language](natural-language)
 
 Samples that demonstrate the [Cloud Natural language](https://cloud.google.com/natural-language/)
