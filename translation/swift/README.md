@@ -23,6 +23,7 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 
 ###  Setup the app
 - Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
+- Create `google` folder inside of `ios-docs-samples/translation/swift/` 
 - Go to `ios-docs-samples/translation/swift/google/`
 - Copy the below listed folder protos into the `google` folder
 1. api : create `api` folder inside of `ios-docs-samples/translation/swift/google/` folder and paste `annotations.proto`, `http.proto`, `label.proto`, `monitored_resource.proto` from [api](https://github.com/googleapis/googleapis/tree/master/google/api)

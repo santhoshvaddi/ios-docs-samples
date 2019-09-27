@@ -20,7 +20,7 @@ import Foundation
 struct ApplicationConstants {
   static let Host = "translate.googleapis.com" 
   static let languageCode = "en-US"
-  static let projectID = "dialogflowsamples-santhosh-2"
+  static let projectID = "your-project-identifier"
   static let locationID = "us-central1"
   static let glossaryID = " your-glossary-ID"
 }
