@@ -13,8 +13,8 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 
 ## Prerequisites
 - An OSX machine or simulator
-- [Xcode 9.1][xcode] or later
-- [Cocoapods][cocoapods] version 1.0 or later
+- [Xcode 10][xcode] or higher
+- [Cocoapods][cocoapods]
 
 ## Setup
 - Create a project (or use an existing one) in the [Google Cloud Console][cloud-console]
@@ -41,6 +41,7 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 
 - Complete the steps for [Add Firebase to your app](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app) and expand the "Create a Firebase project" section for instructions on how to add project to your Firebase console. Note: No need to complete any other sections, they are already done. 
 - Complete the steps to [Configuring APNs with FCM](https://firebase.google.com/docs/cloud-messaging/ios/certs).
+- [Upload your APNS Authentication Key to Firebase](https://firebase.google.com/docs/cloud-messaging/ios/first-message#upload_your_apns_authentication_key)
 - Use `iOS bundle ID` which has push notifications enabled and select your development team in 'General->Signing' before building the application in an iOS device.
     Note: as we were going to get the token in notifications, Please run the sample in iOS device instead of running it in the simulator. 
 - In the [Firebase console](https://console.firebase.google.com/), open the "Authentication" section under Develop.

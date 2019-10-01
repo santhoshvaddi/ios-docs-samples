@@ -23,13 +23,6 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 
 ###  Setup the app
 - Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
-- Go to `ios-docs-samples/translation/swift/google/`
-- Copy the below listed folder protos into the `google` folder
-1. api : create `api` folder inside of `ios-docs-samples/translation/swift/google/` folder and paste `annotations.proto`, `http.proto`, `label.proto`, `monitored_resource.proto` from [api](https://github.com/googleapis/googleapis/tree/master/google/api)
-2. Cloud: get the `cloud/translate/v3/translation_service.proto` in your project's google folder. your project structure will look similar to `ios-docs-samples/translation/swift/google/cloud/translate/v3/translation_service.proto` [translation_service.proto](https://github.com/googleapis/googleapis/blob/master/google/cloud/translate/v3/translation_service.proto)
-3. longrunning:  create `longrunning` folder inside of `ios-docs-samples/translation/swift/google/` folder and paste [operations.proto](https://github.com/googleapis/googleapis/blob/master/google/longrunning/operations.proto)
-4. rpc:  create `rpc` folder inside of `ios-docs-samples/translation/swift/google/` folder and paste `code.proto, error_details.proto, status.proto` from [rpc](https://github.com/googleapis/googleapis/tree/master/google/rpc)
-
 - `cd ios-docs-samples/translation/swift/` 
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `Translation.xcworkspace` and not `Translation.xcodeproj`.
 - In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `Translation` directory.
