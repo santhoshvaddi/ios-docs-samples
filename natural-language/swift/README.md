@@ -27,13 +27,6 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 
 ###  Setup the app
 - Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
-- Go to `ios-docs-samples/natuaral-language/swift/google/`
-- Copy the below listed folder protos into the `google` folder
-1. api : create `api` folder inside of `ios-docs-samples/natuaral-language/swift/google/` folder and paste `annotations.proto`, `client.proto`, `field_behavior.proto`,  `http.proto`, `label.proto`, `monitored_resource.proto` from [api](https://github.com/googleapis/googleapis/tree/master/google/api)
-2. Cloud: get the `cloud/language/v1/language_service.proto` in your project's google folder. your project structure will look similar to `ios-docs-samples/natural-language/swift/google/cloud/language/v1/language_service.proto` [language_service.proto](https://github.com/googleapis/googleapis/blob/master/google/cloud/language/v1/language_service.proto)
-3. longrunning:  create `longrunning` folder inside of `ios-docs-samples/natural-language/swift/google/` folder and paste [operations.proto](https://github.com/googleapis/googleapis/blob/master/google/longrunning/operations.proto)
-4. rpc:  create `rpc` folder inside of `ios-docs-samples/natural-language/swift/google/` folder and paste `code.proto, error_details.proto, status.proto` from [rpc](https://github.com/googleapis/googleapis/tree/master/google/rpc)
-
 - `cd ios-docs-samples/natural-language/swift/` 
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `NaturalLanguage.xcworkspace` and not `NaturalLanguage.xcodeproj`.
 - Go to the project editor for your target and then click on the `Capabilities` tab. Look for `Push Notifications` and toggle its value to ON

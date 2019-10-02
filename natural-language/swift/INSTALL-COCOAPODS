@@ -1,5 +1,48 @@
 #!/bin/sh
 
+mkdir google
+cd google
+mkdir api cloud longrunning rpc
+
+#api
+cd api
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/annotations.proto >> annotations.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto >> http.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/label.proto >> label.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/monitored_resource.proto >> monitored_resource.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/monitored_resource.proto >> client.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/field_behavior.proto >> field_behavior.proto
+cd ..
+
+
+#longrunning
+cd longrunning
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/longrunning/operations.proto >> operations.proto
+
+cd ..
+
+# rpc
+cd rpc
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/rpc/code.proto >> code.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/rpc/error_details.proto >> error_details.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/rpc/status.proto >> status.proto
+
+cd ..
+
+cd cloud
+mkdir translate
+cd translate
+mkdir v3
+cd v3
+
+#cloud
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/cloud/translate/v3/translation_service.proto >> translation_service.proto
+
+cd ../../../..
+echo "Checking path of the directory"
+pwd
+
+
 echo "Installing Cocoapod dependencies"
 pod install
 
