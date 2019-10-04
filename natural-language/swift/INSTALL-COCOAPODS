@@ -1,17 +1,22 @@
 #!/bin/sh
 
+./CLEANUP
 mkdir google
 cd google
 mkdir api cloud longrunning rpc
 
 #api
 cd api
+
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/client.proto >> client.proto
 curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/annotations.proto >> annotations.proto
 curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto >> http.proto
 curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/label.proto >> label.proto
 curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/monitored_resource.proto >> monitored_resource.proto
-curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/monitored_resource.proto >> client.proto
 curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/field_behavior.proto >> field_behavior.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/resource.proto >> resource.proto
+curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/launch_stage.proto >> launch_stage.proto
+
 cd ..
 
 
